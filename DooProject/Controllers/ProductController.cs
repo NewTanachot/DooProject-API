@@ -25,23 +25,15 @@ namespace DooProject.Controllers
         {
             try
             {
-                var ProductDTO = new List<ProdoctDTO>();
+                var productsDTO = new List<ProdoctDTO_Get>();
                 var Product = await context.ProductLookUps
                     .Where(x => !x.IsDeleted)
                     .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
                     .ToListAsync();
 
-                Product.ForEach(x =>
-                {
-                    ProductDTO.Add(new ProdoctDTO
-                    {
-                        ProductId = x.ProductId,
-                        ProductName = x.ProductName,
-                        CreateTime = x.CreateTime
-                    });
-                });
+                Product.ForEach(x => productsDTO.Add(ProdoctDTO_Get.ProdoctDTOMapper(x.ProductId, x.ProductName, x.CreateTime)));
 
-                return Ok(ProductDTO);
+                return Ok(productsDTO);
             }
             catch (Exception ex)
             {
@@ -90,6 +82,34 @@ namespace DooProject.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> EditProduct([FromBody] ProductDTO_Post ProdoctDTO)
+        {
+            try
+            {
+                var Product = await context.ProductLookUps.FindAsync(ProdoctDTO.ProductId);
+
+                if (Product != null)
+                {
+                    Product.ProductName = ProdoctDTO.ProductName;
+
+                    await context.SaveChangesAsync();
+                    return Ok($"Edit {Product.ProductName} Success.");
+                }
+                else
+                {
+                    productLogger.LogWarning("Product Not Found.");
+                    return NotFound("Product Not Found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                productLogger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         [HttpDelete("[action]")]
         public async Task<IActionResult> RemoveStock(string ProductId)

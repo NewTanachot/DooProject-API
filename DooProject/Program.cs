@@ -12,7 +12,7 @@ builder.Services.AddDbContext<DatabaseContext>(options => {
 });
 
 // Model AutoMapper Dependency Injection
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+//builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
