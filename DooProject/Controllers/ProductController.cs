@@ -1,6 +1,7 @@
 ﻿using DooProject.Datas;
 using DooProject.DTO;
 using DooProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ namespace DooProject.Controllers
         }
 
         [HttpGet("[action]")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetProduct()
         {
             try
