@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using DooProject.DTO;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace DooProject.Models
 {
@@ -16,6 +18,7 @@ namespace DooProject.Models
 
         public bool IsDeleted { get; set; } = false;
 
-        public List<ProductTransection> ProductTransections { get; set; } = new List<ProductTransection>();
+        //[JsonIgnore]
+        //public List<ProductTransection> ProductTransections { get; set; } = new List<ProductTransection>();
     }
 }

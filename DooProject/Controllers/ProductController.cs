@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DooProject.Datas;
+﻿using DooProject.Datas;
 using DooProject.DTO;
 using DooProject.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,64 +16,87 @@ namespace DooProject.Controllers
         public ProductController(DatabaseContext context, ILoggerFactory logger)
         {
             this.context = context;
-            productLogger = logger.CreateLogger(typeof(ProductController));
+            productLogger = logger.CreateLogger<ProductController>();
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetStock()
+        public async Task<IActionResult> GetProduct()
         {
             try
             {
-                var productsDTO = new List<ProdoctDTO_Get>();
-                var Product = await context.ProductLookUps
+                return Ok( await context.ProductLookUps
                     .Where(x => !x.IsDeleted)
                     .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
-                    .ToListAsync();
-
-                Product.ForEach(x => productsDTO.Add(ProdoctDTO_Get.ProdoctDTOMapper(x.ProductId, x.ProductName, x.CreateTime)));
-
-                return Ok(productsDTO);
+                    .ToListAsync() 
+                );
             }
             catch (Exception ex)
             {
-                productLogger.LogError(ex, ex.Message);
+                productLogger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("[action]/{productId}")]
+        public async Task<IActionResult> GetProduct(int productId)
+        {
+            try
+            {
+                var Product = await context.ProductLookUps
+                    .Where(x => !x.IsDeleted && x.ProductId.Equals(productId))
+                    .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
+                    .ToListAsync();
+
+                if (Product.Any())
+                {
+                    return Ok(Product);
+                }
+
+                productLogger.LogWarning("Product Not Found.");
+                return NotFound(new { Error = "Product Not Found." });
+            }
+            catch (Exception ex)
+            {
+                productLogger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddStock([FromBody] string ProductName)
+        public async Task<IActionResult> AddProduct([FromBody] string productName)
         {
             try
             {
                 var ReturnText = string.Empty;
-                var isStockExist = await context.ProductLookUps.Where(x => x.ProductName.Equals(ProductName.Trim())).FirstOrDefaultAsync();
+                var isStockExist = await context.ProductLookUps
+                    .Where(x => x.ProductName.Equals(productName.Trim()))
+                    .FirstOrDefaultAsync();
 
                 if (isStockExist == null)
                 {
                     await context.ProductLookUps.AddAsync(new ProductLookUp
                     {
-                        ProductName = ProductName.Trim()
+                        ProductName = productName.Trim()
                     });
 
-                    ReturnText = $"Add {ProductName} Success.";
+                    ReturnText = $"Add {productName} Success.";
                 }
                 else if (isStockExist.IsDeleted)
                 {
-                    isStockExist.ProductName = ProductName.Trim();
+                    isStockExist.ProductName = productName.Trim();
                     isStockExist.CreateTime = DateTime.Now;
                     isStockExist.IsDeleted = false;
 
-                    ReturnText = $"Add {ProductName} (Replace deleted item) Success.";
+                    ReturnText = $"Add {productName} (Replace deleted item) Success.";
                 }
                 else
                 {
                     productLogger.LogWarning("Product name is duplicate.");
-                    return BadRequest("Product name is duplicate.");
+                    return BadRequest(new { Error = "Product name is duplicate." });
                 }
 
                 await context.SaveChangesAsync();
-                return Ok($"Add {ProductName} Success.");
+                return Ok(new { Success = $"Add {productName} Success." });
             }
             catch (Exception ex)
             {
@@ -84,18 +106,18 @@ namespace DooProject.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> EditProduct([FromBody] ProductDTO_Post ProdoctDTO)
+        public async Task<IActionResult> EditProduct([FromBody] ProductDTO_Post prodoctDTO)
         {
             try
             {
-                var Product = await context.ProductLookUps.FindAsync(ProdoctDTO.ProductId);
+                var Product = await context.ProductLookUps.FindAsync(prodoctDTO.ProductId);
 
                 if (Product != null)
                 {
-                    Product.ProductName = ProdoctDTO.ProductName;
+                    Product.ProductName = prodoctDTO.ProductName;
 
                     await context.SaveChangesAsync();
-                    return Ok($"Edit {Product.ProductName} Success.");
+                    return Ok(new { Success = $"Edit {Product.ProductName} Success."});
                 }
                 else
                 {
@@ -112,26 +134,26 @@ namespace DooProject.Controllers
 
 
         [HttpDelete("[action]")]
-        public async Task<IActionResult> RemoveStock(string ProductId)
+        public async Task<IActionResult> RemoveProduct(string productId)
         {
             try
             {
-                var DeleteStock = await context.ProductLookUps.Where(x => x.ProductId.Equals(ProductId.Trim())).FirstOrDefaultAsync();
+                var DeleteStock = await context.ProductLookUps.Where(x => x.ProductId.Equals(productId.Trim())).FirstOrDefaultAsync();
 
                 if (DeleteStock != null)
                 {
                     DeleteStock.IsDeleted = true;
 
                     await context.SaveChangesAsync();
-                    return Ok($"Delete Product {DeleteStock.ProductName} Done.");
+                    return Ok(new { Success = $"Delete Product {DeleteStock.ProductName} Done." });
                 }
 
                 productLogger.LogWarning("Product not found.");
-                return NotFound("Product not found.");
+                return NotFound(new { Error = "Product not found" });
             }
             catch (Exception ex)
             {
-                productLogger.LogError(ex, ex.Message);
+                productLogger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
