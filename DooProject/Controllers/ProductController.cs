@@ -120,8 +120,6 @@ namespace DooProject.Controllers
         {
             try
             {
-                var ReturnText = string.Empty;
-
                 // Find userId in JWT  and  Check if it have Id Claim
                 var userId = User.Claims.Where(x => x.Type.Equals("Id")).FirstOrDefault();
                 if (userId == null)
@@ -178,64 +176,6 @@ namespace DooProject.Controllers
                         TransectionDescription = "Initialize Number"
                     });
                 }
-
-                //// Product not found 
-                //if (isStockExist == null)
-                //{
-                //    // Create new Product for add (and also add User)
-                //    var NewProduct = new ProductLookUp
-                //    {
-                //        ProductName = productDTO.ProductName.Trim(),
-                //        User = user
-                //    };
-
-                //    // Add New Product
-                //    await context.ProductLookUps.AddAsync(NewProduct);
-
-                //    // If Product have a Initialize number
-                //    if (productDTO.ProductAmoungInit != 0)
-                //    {
-                //        // Add new ProductTransections
-                //        await context.ProductTransections.AddAsync(new ProductTransection
-                //        {
-                //            ProductLookUp = NewProduct,
-                //            TransectionAmount = productDTO.ProductAmoungInit,
-                //            TransectionDescription = "Initialize Number"
-                //        });
-                //    }
-
-                //    ReturnText = $"Add {productDTO.ProductName} Success.";
-                //}
-
-                //// Product found in Deleted item
-                //else if (isStockExist.IsDeleted)
-                //{
-                //    isStockExist.ProductName = productDTO.ProductName.Trim();
-                //    isStockExist.CreateTime = DateTime.Now;
-                //    isStockExist.IsDeleted = false;
-                //    isStockExist.User = user;
-
-                //    // If Product have a Initialize number
-                //    if (productDTO.ProductAmoungInit != 0)
-                //    {
-                //        // Add new ProductTransections
-                //        await context.ProductTransections.AddAsync(new ProductTransection
-                //        {
-                //            ProductLookUp = isStockExist,
-                //            TransectionAmount = productDTO.ProductAmoungInit,
-                //            TransectionDescription = "Reset Initialize Number"
-                //        });
-                //    }
-
-                //    ReturnText = $"Add {productDTO.ProductName} (Replace deleted item) Success.";
-                //}
-
-                //// Product found in general
-                //else
-                //{
-                //    productLogger.LogWarning("Product name is duplicate.");
-                //    return BadRequest(new { Error = "Product name is duplicate." });
-                //}
 
                 await context.SaveChangesAsync();
                 return Ok(new { Success = $"Add {productDTO.ProductName} Success." });
