@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DooProject.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230208135822_SQLiteMigration")]
+    [Migration("20230209070750_SQLiteMigration")]
     partial class SQLiteMigration
     {
         /// <inheritdoc />
@@ -38,7 +38,6 @@ namespace DooProject.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("ProductId");
@@ -263,9 +262,7 @@ namespace DooProject.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

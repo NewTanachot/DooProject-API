@@ -2,6 +2,7 @@
 using DooProject.DTO;
 using DooProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,23 +13,26 @@ namespace DooProject.Controllers
     public class ProductController : ControllerBase
     {
         private readonly DatabaseContext context;
+        private readonly UserManager<IdentityUser> userManager;
         private readonly ILogger productLogger;
 
-        public ProductController(DatabaseContext context, ILoggerFactory logger)
+        public ProductController(DatabaseContext context, UserManager<IdentityUser> userManager, ILoggerFactory logger)
         {
             this.context = context;
+            this.userManager = userManager;
             productLogger = logger.CreateLogger<ProductController>();
         }
 
         [HttpGet("[action]")]
         [Authorize(Roles = "User")]
+        //[Authorize]
         public async Task<IActionResult> GetProduct()
         {
             try
             {
                 return Ok( await context.ProductLookUps
                     .Where(x => !x.IsDeleted)
-                    .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
+                    .Select(x => new { x.ProductId, x.ProductName, UserId = x.User.Id, x.User.UserName, x.CreateTime })
                     .ToListAsync() 
                 );
             }
@@ -65,40 +69,50 @@ namespace DooProject.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddProduct([FromBody] string productName)
+        public async Task<IActionResult> AddProduct(string productName, string userId)
         {
             try
             {
                 var ReturnText = string.Empty;
-                var isStockExist = await context.ProductLookUps
-                    .Where(x => x.ProductName.Equals(productName.Trim()))
-                    .FirstOrDefaultAsync();
+                var user = await userManager.FindByIdAsync(userId);
 
-                if (isStockExist == null)
+                if (user != null)
                 {
-                    await context.ProductLookUps.AddAsync(new ProductLookUp
+                    var isStockExist = await context.ProductLookUps
+                        .Where(x => x.ProductName.Equals(productName.Trim()))
+                        .FirstOrDefaultAsync();
+
+                    if (isStockExist == null)
                     {
-                        ProductName = productName.Trim()
-                    });
+                        await context.ProductLookUps.AddAsync(new ProductLookUp
+                        {
+                            ProductName = productName.Trim(),
+                            User = user
+                        });
 
-                    ReturnText = $"Add {productName} Success.";
-                }
-                else if (isStockExist.IsDeleted)
-                {
-                    isStockExist.ProductName = productName.Trim();
-                    isStockExist.CreateTime = DateTime.Now;
-                    isStockExist.IsDeleted = false;
+                        ReturnText = $"Add {productName} Success.";
+                    }
+                    else if (isStockExist.IsDeleted)
+                    {
+                        isStockExist.ProductName = productName.Trim();
+                        isStockExist.CreateTime = DateTime.Now;
+                        isStockExist.IsDeleted = false;
+                        isStockExist.User = user;
 
-                    ReturnText = $"Add {productName} (Replace deleted item) Success.";
-                }
-                else
-                {
-                    productLogger.LogWarning("Product name is duplicate.");
-                    return BadRequest(new { Error = "Product name is duplicate." });
+                        ReturnText = $"Add {productName} (Replace deleted item) Success.";
+                    }
+                    else
+                    {
+                        productLogger.LogWarning("Product name is duplicate.");
+                        return BadRequest(new { Error = "Product name is duplicate." });
+                    }
+
+                    await context.SaveChangesAsync();
+                    return Ok(new { Success = $"Add {productName} Success." });
                 }
 
-                await context.SaveChangesAsync();
-                return Ok(new { Success = $"Add {productName} Success." });
+                productLogger.LogWarning($"UserId {userId} not found");
+                return NotFound(new { Success = $"UserId {userId} not found" });
             }
             catch (Exception ex)
             {
