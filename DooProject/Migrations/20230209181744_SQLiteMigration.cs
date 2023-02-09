@@ -160,10 +160,9 @@ namespace DooProject.Migrations
                 name: "ProductLookUps",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    ProductId = table.Column<string>(type: "varchar(50)", nullable: false),
                     ProductName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
@@ -174,17 +173,18 @@ namespace DooProject.Migrations
                         name: "FK_ProductLookUps_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ProductTransections",
                 columns: table => new
                 {
-                    TransectionID = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    TransectionID = table.Column<string>(type: "varchar(50)", nullable: false),
                     TransectionAmount = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProductID = table.Column<int>(type: "INTEGER", nullable: false)
+                    TransectionDescription = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    ProductID = table.Column<string>(type: "varchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -193,8 +193,7 @@ namespace DooProject.Migrations
                         name: "FK_ProductTransections_ProductLookUps_ProductID",
                         column: x => x.ProductID,
                         principalTable: "ProductLookUps",
-                        principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ProductId");
                 });
 
             migrationBuilder.CreateIndex(

@@ -28,23 +28,28 @@ namespace DooProject.Services
             try 
             {
                 // Set JwtToken Expire TimeSpan (Minutes)
-                int TokenExpireSpan = 1;
+                int TokenExpireSpan = 60;
 
-                var TokenClaims = new List<Claim>();
+                // Initialize TokenClaims
+                var TokenClaims = new List<Claim>
+                {
+                    // Add UserId to JWT
+                    new Claim("Id", user.Id)
+                };
 
-                // Add all UserClaims
+                // Add all UserClaims to TokenClaims
                 TokenClaims.AddRange(await userManager.GetClaimsAsync(user));
 
-                // Get RoleClaims
+                // Get RoleClaims to TokenClaims
                 foreach (var roleName in await userManager.GetRolesAsync(user))
                 {
-                    // Add Role
-                    TokenClaims.AddRange(new List<Claim> { new Claim(ClaimTypes.Role, roleName) });
+                    // Add Role to TokenClaims
+                    TokenClaims.AddRange(new List<Claim> { new Claim("Role", roleName) });
                     var Role = await roleManager.FindByNameAsync(roleName);
 
                     if (Role != null)
                     {
-                        // Add RoleClaim
+                        // Add RoleClaim (Permission) to TokenClaims
                         TokenClaims.AddRange(await roleManager.GetClaimsAsync(Role));
                     }
                 }

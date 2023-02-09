@@ -2,7 +2,7 @@
 {
     public class TransectionDTO
     {
-        public int ProductID { get; set; }
+        public string ProductID { get; set; } = string.Empty;
 
         public int TransectionAmoung { get; set; }
     }

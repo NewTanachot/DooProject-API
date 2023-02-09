@@ -56,11 +56,10 @@ namespace DooProject.Controllers
                     });
 
                     // Create and Add Role "User" to User
-                    // Can refactor this to another API in RoleController
-                    if (!await roleManager.RoleExistsAsync("User"))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole("User"));
-                    }
+                    //if (!await roleManager.RoleExistsAsync("User"))
+                    //{
+                    //    await roleManager.CreateAsync(new IdentityRole("User"));
+                    //}
 
                     await userManager.AddToRoleAsync(user, "User");
 
@@ -90,20 +89,24 @@ namespace DooProject.Controllers
                     var AuthService = new AuthServices(userManager, roleManager, logger, configuration);
                     var JwtToken = await AuthService.CreateAccessTokenAsync(User);
 
-                    if (JwtToken != null)
+                    // Check If token create fail
+                    if (JwtToken == null)
                     {
-                        return Ok(new { 
-                            UserId = User.Id,
-                            User.UserName,
-                            AccessToken = new JwtSecurityTokenHandler().WriteToken(JwtToken),
-                            AccessToken_CreateAt = JwtToken.ValidFrom.ToLocalTime(),
-                            AccessToken_ExpireAt = JwtToken.ValidTo.ToLocalTime()
-                        });
+                        throw new Exception("Fail to create JWToken.");
                     }
+
+                    return Ok(new
+                    {
+                        UserId = User.Id,
+                        User.UserName,
+                        AccessToken = new JwtSecurityTokenHandler().WriteToken(JwtToken),
+                        AccessToken_CreateAt = JwtToken.ValidFrom.ToLocalTime(),
+                        AccessToken_ExpireAt = JwtToken.ValidTo.ToLocalTime()
+                    });
                 }
 
-                authLogger.LogWarning($"{loginInfo.Email} login fail.");
-                return BadRequest(new { Error = $"{loginInfo.Email} login fail." });
+                authLogger.LogWarning($"{loginInfo.Email} login fail. Wrong password or User doesn't exist");
+                return BadRequest(new { Error = $"{loginInfo.Email} login fail. Wrong password or User doesn't exist" });
             }
             catch(Exception ex) 
             {

@@ -19,9 +19,8 @@ namespace DooProject.Migrations
 
             modelBuilder.Entity("DooProject.Models.ProductLookUp", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProductId")
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("TEXT");
@@ -35,6 +34,7 @@ namespace DooProject.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("ProductId");
@@ -46,15 +46,18 @@ namespace DooProject.Migrations
 
             modelBuilder.Entity("DooProject.Models.ProductTransection", b =>
                 {
-                    b.Property<int>("TransectionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TransectionID")
+                        .HasColumnType("varchar(50)");
 
-                    b.Property<int>("ProductID")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProductID")
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("TransectionAmount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("TransectionDescription")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("TransectionID");
 
@@ -259,7 +262,9 @@ namespace DooProject.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -268,9 +273,7 @@ namespace DooProject.Migrations
                 {
                     b.HasOne("DooProject.Models.ProductLookUp", "ProductLookUp")
                         .WithMany()
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductID");
 
                     b.Navigation("ProductLookUp");
                 });
