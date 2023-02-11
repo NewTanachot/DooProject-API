@@ -22,11 +22,20 @@ namespace DooProject.Migrations
                     b.Property<string>("ProductId")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<DateTime>("CreateTime")
+                    b.Property<DateTime?>("EXD")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("MFD")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ProductAddDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProductDescripttion")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -49,19 +58,23 @@ namespace DooProject.Migrations
                     b.Property<string>("TransectionID")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("ProductID")
+                    b.Property<string>("ProductId")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int>("TransectionAmount")
+                    b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TransectionDescription")
-                        .HasMaxLength(100)
+                    b.Property<DateTime>("TransectionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TransectionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("TransectionID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductTransections");
                 });
@@ -272,8 +285,8 @@ namespace DooProject.Migrations
             modelBuilder.Entity("DooProject.Models.ProductTransection", b =>
                 {
                     b.HasOne("DooProject.Models.ProductLookUp", "ProductLookUp")
-                        .WithMany()
-                        .HasForeignKey("ProductID");
+                        .WithMany("ProductTransections")
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("ProductLookUp");
                 });
@@ -327,6 +340,11 @@ namespace DooProject.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DooProject.Models.ProductLookUp", b =>
+                {
+                    b.Navigation("ProductTransections");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,14 +8,17 @@ namespace DooProject.Models
     {
         [Key]
         [Column(TypeName = "varchar(50)")]
-        public string TransectionID { get; set; } = Guid.NewGuid().ToString().ToUpper();
+        public string TransectionID { get; set; } = "T_" + Guid.NewGuid().ToString().ToUpper();
 
-        public int TransectionAmount { get; set; }
+        [MaxLength(50)]
+        public string TransectionType { get; set; } = string.Empty;
 
-        [MaxLength(100)]
-        public string? TransectionDescription { get; set; }
-
-        [ForeignKey("ProductID")]
+        // 1:n relationship (one)
+        [ForeignKey("ProductId")]
         public ProductLookUp ProductLookUp { get; set; } = new ProductLookUp();
+
+        public int Quantity { get; set; }
+
+        public DateTime TransectionDate { get; set; } = DateTime.Now;
     }
 }

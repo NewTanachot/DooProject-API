@@ -12,15 +12,26 @@ namespace DooProject.Models
     {
         [Key]
         [Column(TypeName = "varchar(50)")]
-        public string ProductId { get; set; } = Guid.NewGuid().ToString().ToUpper();
+        public string ProductId { get; set; } = "P_" + Guid.NewGuid().ToString().ToUpper();
 
         [MaxLength(50)]
         public string ProductName { get; set; } = string.Empty;
 
+        public string? ProductDescripttion { get; set; }
+
         [ForeignKey("UserId")]
         public IdentityUser User { get; set; } = new IdentityUser();
-        
-        public DateTime CreateTime { get; set; } = DateTime.Now;
+
+        // 1:n relationship (many)
+        //[JsonIgnore]
+        //[NotMapped]
+        public ICollection<ProductTransection> ProductTransections { get; set; } = new List<ProductTransection>();
+
+        public DateTime? MFD { get; set; }
+
+        public DateTime? EXD { get; set; }
+
+        public DateTime ProductAddDate { get; set; } = DateTime.Now;
 
         public bool IsDeleted { get; set; } = false;
     }

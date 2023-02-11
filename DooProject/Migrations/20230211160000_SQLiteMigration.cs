@@ -162,8 +162,11 @@ namespace DooProject.Migrations
                 {
                     ProductId = table.Column<string>(type: "varchar(50)", nullable: false),
                     ProductName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ProductDescripttion = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    CreateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    MFD = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EXD = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ProductAddDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -182,16 +185,17 @@ namespace DooProject.Migrations
                 columns: table => new
                 {
                     TransectionID = table.Column<string>(type: "varchar(50)", nullable: false),
-                    TransectionAmount = table.Column<int>(type: "INTEGER", nullable: false),
-                    TransectionDescription = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    ProductID = table.Column<string>(type: "varchar(50)", nullable: true)
+                    TransectionType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ProductId = table.Column<string>(type: "varchar(50)", nullable: true),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
+                    TransectionDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductTransections", x => x.TransectionID);
                     table.ForeignKey(
-                        name: "FK_ProductTransections_ProductLookUps_ProductID",
-                        column: x => x.ProductID,
+                        name: "FK_ProductTransections_ProductLookUps_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "ProductLookUps",
                         principalColumn: "ProductId");
                 });
@@ -239,9 +243,9 @@ namespace DooProject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductTransections_ProductID",
+                name: "IX_ProductTransections_ProductId",
                 table: "ProductTransections",
-                column: "ProductID");
+                column: "ProductId");
         }
 
         /// <inheritdoc />

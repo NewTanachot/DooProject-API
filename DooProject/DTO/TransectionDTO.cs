@@ -4,6 +4,8 @@
     {
         public string ProductID { get; set; } = string.Empty;
 
-        public int TransectionAmoung { get; set; }
+        public int Quantity { get; set; }
+
+        public string TransectionType { get; set; } = string.Empty;
     }
 }

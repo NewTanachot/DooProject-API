@@ -41,7 +41,7 @@ namespace DooProject.Controllers
                 var user = new IdentityUser
                 {
                     Email = registerInfo.Email,
-                    UserName = registerInfo.Email,
+                    UserName = registerInfo.FirstName,
                 };
 
                 var result = await userManager.CreateAsync(user, registerInfo.Password);
@@ -61,13 +61,18 @@ namespace DooProject.Controllers
                     //    await roleManager.CreateAsync(new IdentityRole("User"));
                     //}
 
-                    await userManager.AddToRoleAsync(user, "User");
+                    //await userManager.AddToRoleAsync(user, "User");
 
                     return Ok(new { Success = $"User {registerInfo.Email} registered." });
                 }
 
-                authLogger.LogWarning($"Error : Something wrong.");
-                return BadRequest(new { Error = $"Something wrong." });
+                // Log all Error Code
+                result.Errors.ToList().ForEach(x =>
+                {
+                    authLogger.LogWarning(x.Code, x.Description);
+                });
+
+                return BadRequest(new { Error = result.Errors });
             }
             catch (Exception ex) 
             {

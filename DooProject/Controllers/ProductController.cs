@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace DooProject.Controllers
 {
@@ -25,13 +26,23 @@ namespace DooProject.Controllers
 
         [HttpGet("[action]")]
         //[Authorize(Roles = "User")]
-        public async Task<IActionResult> GetProductAsync()
+        public async Task<IActionResult> GetProductForAllUserAsync()
         {
             try
             {
                 return Ok( await context.ProductLookUps
                     .Where(x => !x.IsDeleted)
-                    .Select(x => new { x.ProductId, x.ProductName, UserId = x.User.Id, x.User.UserName, x.CreateTime })
+                    .Select(x => new 
+                    { 
+                        x.ProductId, 
+                        x.ProductName, 
+                        x.ProductDescripttion,
+                        x.MFD,
+                        x.EXD,
+                        UserId = x.User.Id, 
+                        x.User.UserName, 
+                        x.ProductAddDate
+                    })
                     .ToListAsync() 
                 );
             }
@@ -43,13 +54,23 @@ namespace DooProject.Controllers
         }
 
         [HttpGet("[action]/{productId}")]
-        public async Task<IActionResult> GetProductAsync(string productId)
+        public async Task<IActionResult> GetProductForAllUserAsync(string productId)
         {
             try
             {
                 return Ok(await context.ProductLookUps
-                    .Where(x => !x.IsDeleted && x.ProductId.Equals(productId))
-                    .Select(x => new { x.ProductId, x.ProductName, UserId = x.User.Id, x.User.UserName, x.CreateTime })
+                    .Where(x => !x.IsDeleted && x.ProductId == productId)
+                    .Select(x => new 
+                    { 
+                        x.ProductId, 
+                        x.ProductName,
+                        x.ProductDescripttion,
+                        x.MFD,
+                        x.EXD,
+                        UserId = x.User.Id, 
+                        x.User.UserName, 
+                        x.ProductAddDate
+                    })
                     .ToListAsync());
             }
             catch (Exception ex)
@@ -61,22 +82,33 @@ namespace DooProject.Controllers
 
         [Authorize]
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetProductByUserAsync()
+        public async Task<IActionResult> GetProductAsync()
         {
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                var userId = User.Claims.Where(x => x.Type.Equals("Id")).FirstOrDefault();
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
                 if (userId == null)
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return BadRequest(new { Error = "Invalid Token Structure (No UserId)." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
                 // Find and return all Product 
                 return Ok( await context.ProductLookUps
-                    .Where(x => !x.IsDeleted && x.User.Id.Equals(userId.Value))
-                    .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
+                    .Where(x => !x.IsDeleted && x.User.Id == userId.Value)
+                    .Select(x => 
+                        new { 
+                            x.ProductId, 
+                            x.ProductName,
+                            x.ProductDescripttion,
+                            // Sum all TransectionAmount if it not null or return 0
+                            ProductAmount = x.ProductTransections.Sum(s => s.Quantity), 
+                            x.MFD,
+                            x.EXD,
+                            x.ProductAddDate
+                        })
+                    .OrderBy(x => x.ProductName)
                     .ToListAsync());
             }
             catch (Exception ex)
@@ -88,23 +120,34 @@ namespace DooProject.Controllers
 
         [Authorize]
         [HttpGet("[action]/{productId}")]
-        public async Task<IActionResult> GetProductByUserAsync(string productId)
+        public async Task<IActionResult> GetProductAsync(string productId)
         {
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                var userId = User.Claims.Where(x => x.Type.Equals("Id")).FirstOrDefault();
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
                 if (userId == null)
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return BadRequest(new { Error = "Invalid Token Structure (No UserId)." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
                 // Find and return all Product 
                 return Ok(await context.ProductLookUps
                     // Check Delete, Owner and productId
-                    .Where(x => !x.IsDeleted && x.User.Id.Equals(userId.Value) && x.ProductId.Equals(productId))
-                    .Select(x => new { x.ProductId, x.ProductName, x.CreateTime })
+                    .Where(x => !x.IsDeleted && x.User.Id == userId.Value && x.ProductId == productId)
+                    .Select(x =>
+                        new {
+                            x.ProductId,
+                            x.ProductName,
+                            x.ProductDescripttion,
+                            // Sum all TransectionAmount if it not null or return 0
+                            ProductAmount = x.ProductTransections != null ? x.ProductTransections.Sum(s => s.Quantity) : 0,
+                            x.MFD,
+                            x.EXD,
+                            x.ProductAddDate
+                        })
+                    .OrderBy(x => x.ProductName)
                     .FirstOrDefaultAsync());
             }
             catch (Exception ex)
@@ -116,16 +159,16 @@ namespace DooProject.Controllers
 
         [Authorize]
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddProductByUserAsync([FromBody] ProductDTO_Post productDTO)
+        public async Task<IActionResult> AddProductAsync([FromBody] ProductDTO_Post productDTO)
         {
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                var userId = User.Claims.Where(x => x.Type.Equals("Id")).FirstOrDefault();
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
                 if (userId == null)
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return BadRequest(new { Error = "Invalid Token Structure (No UserId)." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
                 // Find UserClaim by userId  and  Check if not exists
@@ -138,47 +181,67 @@ namespace DooProject.Controllers
 
                 // Find Product by Name
                 var isStockExist = await context.ProductLookUps
-                    .Where(x => x.ProductName.Equals(productDTO.ProductName.Trim()))
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(x => x.User.Id == userId.Value && x.ProductName == productDTO.ProductName.Trim());
 
-                // Check if Product found on Deleted Product
-                if (isStockExist != null && isStockExist.IsDeleted)
+                // Create NewProduct object and Result value
+                var NewProduct = new ProductLookUp();
+                var ResultValue = string.Empty;
+
+                // Check if Product was not found
+                if (isStockExist == null)
                 {
-                    // Delete the old Product in Trash ( Also delete transection data with foreign key )
-                    context.ProductLookUps.Remove(isStockExist);
+                    // Create new Product for add (and also add User)
+                    NewProduct = new ProductLookUp
+                    {
+                        ProductName = productDTO.ProductName.Trim(),
+                        ProductDescripttion = productDTO.ProductDescription,
+                        MFD = productDTO.MFD,
+                        EXD = productDTO.EXD,
+                        User = user
+                    };
+
+                    // Add New Product
+                    await context.ProductLookUps.AddAsync(NewProduct);
+
+                    // Add ResultValue for New Product Creation
+                    ResultValue = $"Add {productDTO.ProductName.Trim()} Success.";
                 }
 
-                // If Product was found on general (Bad case for addProduct Method)
+                // If Product was found in Deleted Product
+                else if (isStockExist.IsDeleted)
+                {
+                    isStockExist.ProductName = productDTO.ProductName.Trim();
+                    isStockExist.ProductDescripttion = productDTO.ProductDescription;
+                    isStockExist.MFD = productDTO.MFD;
+                    isStockExist.EXD = productDTO.EXD;
+
+                    // Add ResultValue for Updating old Product
+                    ResultValue = $"Add {productDTO.ProductName.Trim()} Success (By restore old product).";
+                }
+
+                // If Product was found in general (Bad case scenario)
                 else
                 {
                     productLogger.LogWarning("Product name is duplicate.");
                     return BadRequest(new { Error = "Product name is duplicate." });
                 }
 
-                // Create new Product for add (and also add User)
-                var NewProduct = new ProductLookUp
-                {
-                    ProductName = productDTO.ProductName.Trim(),
-                    User = user
-                };
-
-                // Add New Product
-                await context.ProductLookUps.AddAsync(NewProduct);
+                // ======================== [ Transection Initialize ] ======================== //
 
                 // If Product have a Initialize number
-                if (productDTO.ProductAmoungInit != 0)
+                if (productDTO.ProductQuantity != 0)
                 {
                     // Add new ProductTransections
                     await context.ProductTransections.AddAsync(new ProductTransection
                     {
                         ProductLookUp = NewProduct,
-                        TransectionAmount = productDTO.ProductAmoungInit,
-                        TransectionDescription = "Initialize Number"
+                        Quantity = productDTO.ProductQuantity,
+                        TransectionType = "Initialize Number"
                     });
                 }
 
                 await context.SaveChangesAsync();
-                return Ok(new { Success = $"Add {productDTO.ProductName} Success." });
+                return Ok(new { Success = ResultValue });
             }
             catch (Exception ex)
             {
@@ -189,43 +252,76 @@ namespace DooProject.Controllers
 
         [Authorize]
         [HttpPut("[action]")]
-        public async Task<IActionResult> EditProductByUserAsync([FromBody] ProductDTO_Put prodoctDTO)
+        public async Task<IActionResult> EditProductAsync([FromBody] ProductDTO_Put prodoctDTO)
         {
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                var userId = User.Claims.Where(x => x.Type == "Id").FirstOrDefault();
-
-                if (userId != null)
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
+                if (userId == null)
                 {
-                    // Find Product by ProductId
-                    var Product = await context.ProductLookUps
-                        .Include(x => x.User)
-                        .FirstOrDefaultAsync(x => x.ProductId.Equals(prodoctDTO.ProductId));
+                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
+                }
 
-                    // Product exists
-                    if (Product != null)
-                    {
-                        // Check Product owner by UserId
-                        if (Product.User.Id.Equals(userId.Value))
-                        {
-                            // Update ProductName
-                            Product.ProductName = prodoctDTO.ProductName;
+                // Find Product by ProductId
+                var Product = await context.ProductLookUps
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.ProductId == prodoctDTO.ProductId);
 
-                            await context.SaveChangesAsync();
-                            return Ok(new { Success = $"Edit {Product.ProductName} Success." });
-                        }
+                // Logger for Check Product have Include User or not
+                productLogger.LogWarning(JsonConvert.SerializeObject(Product));
 
-                        productLogger.LogWarning("This User doesn't have Permission to access another user data.");
-                        return NotFound(new { Error = "This User doesn't have Permission to access another user data." });
-                    }
-
+                // Check if Product not exist 
+                if (Product == null)
+                {
                     productLogger.LogWarning("Product Not Found.");
                     return NotFound(new { Error = "Product Not Found." });
                 }
 
-                productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                return BadRequest(new { Error = "Invalid Token Structure (No UserId)." });
+                // Check Product owner by UserId
+                if (!Product.User.Id.Equals(userId.Value))
+                {
+                    productLogger.LogWarning($"This User doesn't have Permission to access another user data. " +
+                        $"ProductUser : {Product.User.Id} and Token : {userId.Value}");
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "This User doesn't have Permission to access another user data." });
+                }
+
+                // ------- Check Update Section -------
+
+                // Check ProductName is not null
+                if (!string.IsNullOrEmpty(prodoctDTO.ProductName))
+                {
+                    // Check duplicate ProductName 
+                    if (await context.ProductLookUps.FirstOrDefaultAsync(x => x.User.Id == userId.Value && x.ProductName == prodoctDTO.ProductName) != null)
+                    {
+                        productLogger.LogWarning("Product name is duplicate.");
+                        return BadRequest(new { Error = "Product name is duplicate." });
+                    }
+
+                    Product.ProductName = prodoctDTO.ProductName;
+                }
+
+                // Check Product Description is not null
+                if (prodoctDTO.ProductDescription != null)
+                {
+                    Product.ProductDescripttion = prodoctDTO.ProductDescription;
+                }
+
+                // Check Product MFD is not null
+                if (prodoctDTO.MFD != null)
+                {
+                    Product.MFD = prodoctDTO.MFD;
+                }
+
+                // Check Product EXD is not null
+                if (prodoctDTO.EXD != null)
+                {
+                    Product.EXD = prodoctDTO.EXD;
+                }
+
+                await context.SaveChangesAsync();
+                return Ok(new { Success = $"Edit {Product.ProductName} Success." });
             }
             catch (Exception ex)
             {
@@ -235,42 +331,86 @@ namespace DooProject.Controllers
         }
 
         [Authorize]
-        [HttpDelete("[action]")]
-        public async Task<IActionResult> RemoveProductByUserAsync(string productId)
+        [HttpDelete("[action]/{productId}")]
+        public async Task<IActionResult> RemoveProductAsync(string productId)
         {
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                var userId = User.Claims.Where(x => x.Type == "Id").FirstOrDefault();
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
 
                 if (userId == null)
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return BadRequest(new { Error = "Invalid Token Structure (No UserId)." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new
+                    {
+                        Error = "Invalid Token Structure (No UserId)."
+                    });
                 }
 
                 // Find Product by ProductId for Delete
-                var DeleteProduct = await context.ProductLookUps.Include(x => x.User).FirstOrDefaultAsync(x => x.ProductId.Equals(productId.Trim()));
+                var SoftDeleteProduct = await context.ProductLookUps.Include(x => x.User).FirstOrDefaultAsync(x => x.ProductId == productId.Trim());
 
                 // Check Product exists
-                if (DeleteProduct == null)
+                if (SoftDeleteProduct == null)
                 {
                     productLogger.LogWarning("Product not found.");
                     return NotFound(new { Error = "Product not found" });
                 }
 
                 // Check Product owner by UserId
-                if (!DeleteProduct.User.Id.Equals(userId.Value))
+                if (!SoftDeleteProduct.User.Id.Equals(userId.Value))
                 {
                     productLogger.LogWarning("This User doesn't have Permission to access another user data.");
-                    return NotFound(new { Error = "This User doesn't have Permission to access another user data." });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "This User doesn't have Permission to access another user data." });
                 }
 
                 // Set Delete to Product 
-                DeleteProduct.IsDeleted = true;
+                SoftDeleteProduct.IsDeleted = true;
 
                 await context.SaveChangesAsync();
-                return Ok(new { Success = $"Delete Product {DeleteProduct.ProductName} Done." });
+                return Ok(new { Success = $"Delete Product {SoftDeleteProduct.ProductId} Done." });
+            }
+            catch (Exception ex)
+            {
+                productLogger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPut("[action]/{productId}")]
+        public async Task<IActionResult> RestoreProductAsync(string productId)
+        {
+            try
+            {
+                // Find userId in JWT  and  Check if it have Id Claim
+                var userId = User.Claims.FirstOrDefault(x => x.Type == "Id");
+
+                if (userId == null)
+                {
+                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
+                    return StatusCode(StatusCodes.Status403Forbidden, new
+                    {
+                        Error = "Invalid Token Structure (No UserId)."
+                    });
+                }
+
+                // Find Product by productId
+                var DeletedProduct = await context.ProductLookUps.FirstOrDefaultAsync(x => x.ProductId == productId);
+
+                // Check if Delete Product exists
+                if (DeletedProduct == null)
+                {
+                    productLogger.LogWarning("Product not found.");
+                    return NotFound(new { Error = "Product not found" });
+                }
+
+                // Restore Deleted Product
+                DeletedProduct.IsDeleted = false;
+
+                await context.SaveChangesAsync();
+                return Ok(new { Success = $"Restore Product {DeletedProduct.ProductId} Done." });
             }
             catch (Exception ex)
             {
