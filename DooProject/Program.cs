@@ -13,7 +13,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Database Context Dependency Injection 
+// Add CORS
+var Cors = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: Cors,
+                  builder =>
+                  {
+                      builder.WithOrigins("http://localhost:8090"
+                                         , "http://127.0.0.1:5173"
+                                         , "http://localhost")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                  });
+});
+
+// Database Context Dependencby Injection 
 builder.Services.AddDbContext<DatabaseContext>(options => {
     options.UseSqlite(builder.Configuration.GetConnectionString("Default"));
 });
@@ -113,6 +128,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(Cors);
 
 app.UseHttpsRedirection();
 
