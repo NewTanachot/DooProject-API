@@ -14,18 +14,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 // Add CORS
-var Cors = "_myAllowSpecificOrigins";
+var DooCors = "DooProjectCors";
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: Cors,
-                  builder =>
-                  {
-                      builder.WithOrigins("http://localhost:8090"
-                                         , "http://127.0.0.1:5173"
-                                         , "http://localhost")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                  });
+    options.AddPolicy(name: DooCors, policy => 
+    {
+        // Set Specific Origin to connect
+        //policy.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+        //.AllowAnyHeader()
+        //.AllowAnyMethod();
+
+        // Set allow all Origin to connect
+        policy.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .SetIsOriginAllowed(origin => true);
+    });
 });
 
 // Database Context Dependencby Injection 
@@ -129,7 +134,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(Cors);
+// Set App to use DooCors Setup option
+// and apply it to every request
+app.UseCors(DooCors);
 
 app.UseHttpsRedirection();
 

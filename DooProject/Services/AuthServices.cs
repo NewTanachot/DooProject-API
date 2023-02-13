@@ -28,7 +28,8 @@ namespace DooProject.Services
             try 
             {
                 // Set JwtToken Expire TimeSpan (Minutes)
-                int TokenExpireSpan = 60;
+                //int TokenExpireSpan_Min = 60;
+                int TokenExpireSpan_Hour = 24;
 
                 // Initialize TokenClaims
                 var TokenClaims = new List<Claim>
@@ -62,7 +63,8 @@ namespace DooProject.Services
                 return new JwtSecurityToken(
                     claims: TokenClaims,
                     notBefore: DateTime.Now,
-                    expires: DateTime.Now.AddMinutes(TokenExpireSpan),
+                    //expires: DateTime.Now.AddMinutes(TokenExpireSpan_Min),
+                    expires: DateTime.Now.AddHours(TokenExpireSpan_Hour),
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256)
                 );
             }
