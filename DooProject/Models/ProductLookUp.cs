@@ -17,7 +17,7 @@ namespace DooProject.Models
         [MaxLength(50)]
         public string ProductName { get; set; } = string.Empty;
 
-        public string? ProductDescripttion { get; set; }
+        public string? ProductDescription { get; set; }
 
         [ForeignKey("UserId")]
         public IdentityUser User { get; set; } = new IdentityUser();

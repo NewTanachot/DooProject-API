@@ -36,7 +36,7 @@ namespace DooProject.Controllers
                     { 
                         x.ProductId, 
                         x.ProductName, 
-                        x.ProductDescripttion,
+                        x.ProductDescription,
                         x.MFD,
                         x.EXD,
                         UserId = x.User.Id, 
@@ -64,7 +64,7 @@ namespace DooProject.Controllers
                     { 
                         x.ProductId, 
                         x.ProductName,
-                        x.ProductDescripttion,
+                        x.ProductDescription,
                         x.MFD,
                         x.EXD,
                         UserId = x.User.Id, 
@@ -101,7 +101,7 @@ namespace DooProject.Controllers
                         new { 
                             x.ProductId, 
                             x.ProductName,
-                            x.ProductDescripttion,
+                            x.ProductDescription,
                             // Sum all TransectionAmount if it not null or return 0
                             ProductAmount = x.ProductTransections.Sum(s => s.Quantity), 
                             x.MFD,
@@ -140,7 +140,7 @@ namespace DooProject.Controllers
                         new {
                             x.ProductId,
                             x.ProductName,
-                            x.ProductDescripttion,
+                            x.ProductDescription,
                             // Sum all TransectionAmount if it not null or return 0
                             ProductAmount = x.ProductTransections != null ? x.ProductTransections.Sum(s => s.Quantity) : 0,
                             x.MFD,
@@ -194,7 +194,7 @@ namespace DooProject.Controllers
                     NewProduct = new ProductLookUp
                     {
                         ProductName = productDTO.ProductName.Trim(),
-                        ProductDescripttion = productDTO.ProductDescription,
+                        ProductDescription = productDTO.ProductDescription,
                         MFD = productDTO.MFD,
                         EXD = productDTO.EXD,
                         User = user
@@ -211,7 +211,7 @@ namespace DooProject.Controllers
                 else if (isStockExist.IsDeleted)
                 {
                     isStockExist.ProductName = productDTO.ProductName.Trim();
-                    isStockExist.ProductDescripttion = productDTO.ProductDescription;
+                    isStockExist.ProductDescription = productDTO.ProductDescription;
                     isStockExist.MFD = productDTO.MFD;
                     isStockExist.EXD = productDTO.EXD;
 
@@ -305,7 +305,7 @@ namespace DooProject.Controllers
                 // Check Product Description is not null
                 if (prodoctDTO.ProductDescription != null)
                 {
-                    Product.ProductDescripttion = prodoctDTO.ProductDescription;
+                    Product.ProductDescription = prodoctDTO.ProductDescription;
                 }
 
                 // Check Product MFD is not null
