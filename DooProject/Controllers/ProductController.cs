@@ -103,7 +103,7 @@ namespace DooProject.Controllers
                             x.ProductName,
                             x.ProductDescription,
                             // Sum all TransectionAmount if it not null or return 0
-                            ProductAmount = x.ProductTransections.Sum(s => s.Quantity), 
+                            ProductQuantity = x.ProductTransections.Sum(s => s.Quantity), 
                             x.MFD,
                             x.EXD,
                             x.ProductAddDate
@@ -142,7 +142,7 @@ namespace DooProject.Controllers
                             x.ProductName,
                             x.ProductDescription,
                             // Sum all TransectionAmount if it not null or return 0
-                            ProductAmount = x.ProductTransections != null ? x.ProductTransections.Sum(s => s.Quantity) : 0,
+                            ProductQuantity = x.ProductTransections != null ? x.ProductTransections.Sum(s => s.Quantity) : 0,
                             x.MFD,
                             x.EXD,
                             x.ProductAddDate

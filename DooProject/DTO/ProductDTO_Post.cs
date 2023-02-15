@@ -4,9 +4,9 @@
     {
         public string ProductName { get; set; } = string.Empty;
 
-        public int ProductQuantity { get; set; }
-
         public string? ProductDescription { get; set; }
+
+        public int ProductQuantity { get; set; }
 
         public DateTime? MFD { get; set; }
 
