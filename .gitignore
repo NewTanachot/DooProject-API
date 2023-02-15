@@ -11,7 +11,7 @@
 *.sln.docstates
 
 .DS_Store
-*.bak
+Design/*.bak
 DooProject/*.db-shm
 DooProject/*.db-wal
 
