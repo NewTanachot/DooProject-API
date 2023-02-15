@@ -12,6 +12,8 @@
 
 .DS_Store
 *.bak
+DooProject/*.db-shm
+DooProject/*.db-wal
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
