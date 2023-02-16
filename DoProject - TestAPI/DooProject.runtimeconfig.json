@@ -1,14 +1,14 @@
 {
   "runtimeOptions": {
     "tfm": "net7.0",
-    "frameworks": [
+    "includedFrameworks": [
       {
         "name": "Microsoft.NETCore.App",
-        "version": "7.0.0"
+        "version": "7.0.2"
       },
       {
         "name": "Microsoft.AspNetCore.App",
-        "version": "7.0.0"
+        "version": "7.0.2"
       }
     ],
     "configProperties": {
