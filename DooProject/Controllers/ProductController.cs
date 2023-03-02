@@ -214,6 +214,8 @@ namespace DooProject.Controllers
                     isStockExist.ProductDescription = productDTO.ProductDescription;
                     isStockExist.MFD = productDTO.MFD;
                     isStockExist.EXD = productDTO.EXD;
+                    // need to set SetDelete to false
+                    isStockExist.IsDeleted = false;
 
                     // Add ResultValue for Updating old Product
                     ResultValue = $"Add {productDTO.ProductName.Trim()} Success (By restore old product).";

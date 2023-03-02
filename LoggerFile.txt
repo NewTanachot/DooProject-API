@@ -1,0 +1,84 @@
+03/02/2023 15:56:23 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+03/02/2023 16:00:19 +07:00 HTTP "POST" "/api/Auth/Login" responded 200 in 1655.5154 ms
+03/02/2023 16:03:57 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+03/02/2023 16:06:11 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+03/02/2023 16:06:20 +07:00 OK daa...
+03/02/2023 16:06:20 +07:00 CRITZ!!! OK daa...
+03/02/2023 16:06:20 +07:00 HTTP "POST" "/api/Auth/Login" responded 200 in 1625.0618 ms
+03/02/2023 16:10:13 +07:00 User profile is available. Using '"C:\Users\Tanac\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+03/02/2023 16:10:13 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+03/02/2023 16:10:13 +07:00 Now listening on: "https://localhost:7260"
+03/02/2023 16:10:13 +07:00 Now listening on: "http://localhost:5154"
+03/02/2023 16:10:13 +07:00 Application started. Press Ctrl+C to shut down.
+03/02/2023 16:10:13 +07:00 Hosting environment: "Development"
+03/02/2023 16:10:13 +07:00 Content root path: "D:\ASP.Net Core\DooProject\DooProject"
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger - -
+03/02/2023 16:10:14 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger - - - 301 0 - 131.0658ms
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/index.html - -
+03/02/2023 16:10:14 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/index.html - - - 200 - text/html;charset=utf-8 166.0552ms
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui.css - -
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui-bundle.js - -
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui-standalone-preset.js - -
+03/02/2023 16:10:14 +07:00 Request starting HTTP/2 GET https://localhost:7260/_framework/aspnetcore-browser-refresh.js - -
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/_framework/aspnetcore-browser-refresh.js - - - 200 11990 application/javascript;+charset=utf-8 13.0310ms
+03/02/2023 16:10:15 +07:00 Request starting HTTP/2 GET https://localhost:7260/_vs/browserLink - -
+03/02/2023 16:10:15 +07:00 Sending file. Request path: '"/swagger-ui.css"'. Physical path: '"N/A"'
+03/02/2023 16:10:15 +07:00 Sending file. Request path: '"/swagger-ui-standalone-preset.js"'. Physical path: '"N/A"'
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui.css - - - 200 143943 text/css 50.0632ms
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui-standalone-preset.js - - - 200 339486 text/javascript 52.3164ms
+03/02/2023 16:10:15 +07:00 Sending file. Request path: '"/swagger-ui-bundle.js"'. Physical path: '"N/A"'
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui-bundle.js - - - 200 1096145 text/javascript 64.5665ms
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 68.4370ms
+03/02/2023 16:10:15 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/v1/swagger.json - -
+03/02/2023 16:10:15 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 121.8522ms
+03/02/2023 16:10:22 +07:00 Request starting HTTP/2 POST https://localhost:7260/api/Auth/Login application/json 57
+03/02/2023 16:10:22 +07:00 CORS policy execution successful.
+03/02/2023 16:10:22 +07:00 Executing endpoint '"DooProject.Controllers.AuthController.Login (DooProject)"'
+03/02/2023 16:10:22 +07:00 Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DooProject.DTO.LoginDTO)" on controller "DooProject.Controllers.AuthController" ("DooProject").
+03/02/2023 16:10:23 +07:00 Executed DbCommand ("12"ms) [Parameters=["@__normalizedEmail_0='?' (Size = 16)"], CommandType='Text', CommandTimeout='30']"
+""SELECT \"a\".\"Id\", \"a\".\"AccessFailedCount\", \"a\".\"ConcurrencyStamp\", \"a\".\"Email\", \"a\".\"EmailConfirmed\", \"a\".\"LockoutEnabled\", \"a\".\"LockoutEnd\", \"a\".\"NormalizedEmail\", \"a\".\"NormalizedUserName\", \"a\".\"PasswordHash\", \"a\".\"PhoneNumber\", \"a\".\"PhoneNumberConfirmed\", \"a\".\"SecurityStamp\", \"a\".\"TwoFactorEnabled\", \"a\".\"UserName\"
+FROM \"AspNetUsers\" AS \"a\"
+WHERE \"a\".\"NormalizedEmail\" = @__normalizedEmail_0
+LIMIT 2"
+03/02/2023 16:10:23 +07:00 Executed DbCommand ("0"ms) [Parameters=["@__user_Id_0='?' (Size = 36)"], CommandType='Text', CommandTimeout='30']"
+""SELECT \"a\".\"Id\", \"a\".\"ClaimType\", \"a\".\"ClaimValue\", \"a\".\"UserId\"
+FROM \"AspNetUserClaims\" AS \"a\"
+WHERE \"a\".\"UserId\" = @__user_Id_0"
+03/02/2023 16:10:23 +07:00 Executed DbCommand ("0"ms) [Parameters=["@__userId_0='?' (Size = 36)"], CommandType='Text', CommandTimeout='30']"
+""SELECT \"a0\".\"Name\"
+FROM \"AspNetUserRoles\" AS \"a\"
+INNER JOIN \"AspNetRoles\" AS \"a0\" ON \"a\".\"RoleId\" = \"a0\".\"Id\"
+WHERE \"a\".\"UserId\" = @__userId_0"
+03/02/2023 16:10:24 +07:00 Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+03/02/2023 16:10:24 +07:00 Executed action "DooProject.Controllers.AuthController.Login (DooProject)" in 1647.9343ms
+03/02/2023 16:10:24 +07:00 Executed endpoint '"DooProject.Controllers.AuthController.Login (DooProject)"'
+03/02/2023 16:10:24 +07:00 HTTP "POST" "/api/Auth/Login" responded 200 in 1752.0831 ms
+03/02/2023 16:10:24 +07:00 Request finished HTTP/2 POST https://localhost:7260/api/Auth/Login application/json 57 - 200 - application/json;+charset=utf-8 1771.5355ms
+03/02/2023 16:10:53 +07:00 Application is shutting down...
+03/02/2023 16:11:22 +07:00 User profile is available. Using '"C:\Users\Tanac\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+03/02/2023 16:11:22 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+03/02/2023 16:11:22 +07:00 Now listening on: "https://localhost:7260"
+03/02/2023 16:11:22 +07:00 Now listening on: "http://localhost:5154"
+03/02/2023 16:11:22 +07:00 Application started. Press Ctrl+C to shut down.
+03/02/2023 16:11:22 +07:00 Hosting environment: "Development"
+03/02/2023 16:11:22 +07:00 Content root path: "D:\ASP.Net Core\DooProject\DooProject"
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger - -
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger - - - 301 0 - 106.3193ms
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/index.html - -
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/index.html - - - 200 - text/html;charset=utf-8 182.2620ms
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui.css - -
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui-bundle.js - -
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/swagger-ui-standalone-preset.js - -
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/_framework/aspnetcore-browser-refresh.js - -
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/_vs/browserLink - -
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/_framework/aspnetcore-browser-refresh.js - - - 200 11990 application/javascript;+charset=utf-8 18.4532ms
+03/02/2023 16:11:25 +07:00 Sending file. Request path: '"/swagger-ui.css"'. Physical path: '"N/A"'
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui.css - - - 200 143943 text/css 74.1485ms
+03/02/2023 16:11:25 +07:00 Sending file. Request path: '"/swagger-ui-standalone-preset.js"'. Physical path: '"N/A"'
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui-standalone-preset.js - - - 200 339486 text/javascript 78.2809ms
+03/02/2023 16:11:25 +07:00 Sending file. Request path: '"/swagger-ui-bundle.js"'. Physical path: '"N/A"'
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/swagger-ui-bundle.js - - - 200 1096145 text/javascript 89.1637ms
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 100.5537ms
+03/02/2023 16:11:25 +07:00 Request starting HTTP/2 GET https://localhost:7260/swagger/v1/swagger.json - -
+03/02/2023 16:11:25 +07:00 Request finished HTTP/2 GET https://localhost:7260/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 130.3974ms
+03/02/2023 20:54:46 +07:00 The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.

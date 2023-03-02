@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -72,7 +73,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//// Add Authorixation ( Add Policy )
+//// Add Authorization ( Add Policy )
 //builder.Services.AddAuthorization(option =>
 //{
 //    // need to Add IAuthorizationHandler
@@ -93,6 +94,18 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
+// Use Serilog
+builder.Host.UseSerilog((context, config) =>
+{
+    // Config from appsetting 
+    config.ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
+
+    // Dirty Manual config
+    //config.WriteTo.Console();
+    //config.WriteTo.File(builder.Configuration.GetValue<string>("") ?? string.Empty);
+});
 
 //builder.Services.AddSwaggerGen();
 
@@ -137,6 +150,9 @@ if (app.Environment.IsDevelopment())
 // Set App to use DooCors Setup option
 // and apply it to every request
 app.UseCors(DooCors);
+
+// Use Serilog
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
