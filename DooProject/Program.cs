@@ -1,4 +1,6 @@
 using DooProject.Datas;
+using DooProject.Interfaces;
+using DooProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS
 var DooCors = "DooProjectCors";
+
+// Add Dependency Injections
+builder.Services.AddScoped<IProductServices, ProductServices>();
 
 builder.Services.AddCors(options =>
 {
@@ -97,15 +102,15 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 // Use Serilog
-builder.Host.UseSerilog((context, config) =>
-{
-    // Config from appsetting 
-    config.ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
+//builder.Host.UseSerilog((context, config) =>
+//{
+//    // Config from appsetting 
+//    config.ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
 
-    // Dirty Manual config
-    //config.WriteTo.Console();
-    //config.WriteTo.File(builder.Configuration.GetValue<string>("") ?? string.Empty);
-});
+//    // Dirty Manual config
+//    //config.WriteTo.Console();
+//    //config.WriteTo.File(builder.Configuration.GetValue<string>("") ?? string.Empty);
+//});
 
 //builder.Services.AddSwaggerGen();
 
@@ -152,7 +157,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(DooCors);
 
 // Use Serilog
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

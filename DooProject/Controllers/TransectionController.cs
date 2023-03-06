@@ -17,10 +17,10 @@ namespace DooProject.Controllers
         private readonly DatabaseContext context;
         private readonly ILogger transectionLogger;
 
-        public TransectionController(DatabaseContext context, ILoggerFactory logger)
+        public TransectionController(DatabaseContext context, ILogger<TransectionController> logger)
         {
             this.context = context;
-            transectionLogger = logger.CreateLogger<TransectionController>();
+            transectionLogger = logger;
         }
 
         [HttpGet("[action]")]
@@ -28,20 +28,6 @@ namespace DooProject.Controllers
         {
             try
             {
-                //var NotInclude = await context.ProductTransections.ToListAsync();
-                //transectionLogger.LogInformation("");
-                //var Include = await context.ProductTransections.ToListAsync();
-
-                ////Console.WriteLine("NotInClude : " + JsonConvert.SerializeObject(NotInclude));
-                ////Console.WriteLine("");
-                ////Console.WriteLine("InClude : " + JsonConvert.SerializeObject(Include));
-
-                //return Ok(new
-                //{
-                //    NotInclude,
-                //    Include
-                //});
-
                 return Ok(await context.ProductTransections
                     .Include(x => x.ProductLookUp)
                     .ThenInclude(x => x.User)

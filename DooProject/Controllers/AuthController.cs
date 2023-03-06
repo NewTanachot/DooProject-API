@@ -22,14 +22,14 @@ namespace DooProject.Controllers
         private readonly IConfiguration configuration;
         private readonly ILogger authLogger;
 
-        public AuthController(DatabaseContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerFactory logger, IConfiguration configuration)
+        public AuthController(DatabaseContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<AuthController> logger, IConfiguration configuration, ILoggerFactory Testlogger)
         {
             this.context = context;
             this.userManager = userManager;
             this.roleManager = roleManager;
-            this.logger = logger;
+            this.logger = Testlogger;
             this.configuration = configuration;
-            authLogger = logger.CreateLogger<AuthController>();
+            authLogger = logger;
         }
 
         [HttpPost("[action]")]
