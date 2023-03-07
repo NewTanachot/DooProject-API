@@ -34,7 +34,7 @@ namespace DooProject.Migrations
                     b.Property<DateTime>("ProductAddDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ProductDescripttion")
+                    b.Property<string>("ProductDescription")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProductName")
@@ -53,9 +53,9 @@ namespace DooProject.Migrations
                     b.ToTable("ProductLookUps");
                 });
 
-            modelBuilder.Entity("DooProject.Models.ProductTransection", b =>
+            modelBuilder.Entity("DooProject.Models.ProductTransaction", b =>
                 {
-                    b.Property<string>("TransectionID")
+                    b.Property<string>("TransactionID")
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("ProductId")
@@ -64,19 +64,19 @@ namespace DooProject.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("TransectionDate")
+                    b.Property<DateTime>("TransactionDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TransectionType")
+                    b.Property<string>("TransactionType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("TransectionID");
+                    b.HasKey("TransactionID");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductTransections");
+                    b.ToTable("ProductTransactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -282,10 +282,10 @@ namespace DooProject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DooProject.Models.ProductTransection", b =>
+            modelBuilder.Entity("DooProject.Models.ProductTransaction", b =>
                 {
                     b.HasOne("DooProject.Models.ProductLookUp", "ProductLookUp")
-                        .WithMany("ProductTransections")
+                        .WithMany("ProductTransactions")
                         .HasForeignKey("ProductId");
 
                     b.Navigation("ProductLookUp");
@@ -344,7 +344,7 @@ namespace DooProject.Migrations
 
             modelBuilder.Entity("DooProject.Models.ProductLookUp", b =>
                 {
-                    b.Navigation("ProductTransections");
+                    b.Navigation("ProductTransactions");
                 });
 #pragma warning restore 612, 618
         }

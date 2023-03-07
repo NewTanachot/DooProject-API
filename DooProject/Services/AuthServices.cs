@@ -1,4 +1,5 @@
 ﻿using DooProject.Controllers;
+using DooProject.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace DooProject.Services
 {
-    public class AuthServices
+    public class AuthServices : IAuthServices
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
@@ -25,7 +26,7 @@ namespace DooProject.Services
 
         public async Task<JwtSecurityToken?> CreateAccessTokenAsync(IdentityUser user)
         {
-            try 
+            try
             {
                 // Set JwtToken Expire TimeSpan (Minutes)
                 //int TokenExpireSpan_Min = 60;
@@ -68,11 +69,37 @@ namespace DooProject.Services
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256)
                 );
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 authServiceLogger.LogError(ex.Message);
                 return null;
             }
+        }
+
+        // Check if Claim Id is exist 
+        public bool CheckIdClaimExist(List<Claim> userClaims, out string userId)
+        {
+            userId = userClaims.FirstOrDefault(x => x.Type == "Id")?.Value ?? string.Empty;
+            if (string.IsNullOrEmpty(userId))
+            {
+                authServiceLogger.LogWarning("Invalid Token Structure (No UserId).");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Find IdentityUser (User object) method
+        public async Task<IdentityUser?> FindUserAsync(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                authServiceLogger.LogWarning($"UserId {userId} not found");
+                return null;
+            }
+
+            return user;
         }
     }
 }

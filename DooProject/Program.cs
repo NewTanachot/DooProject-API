@@ -16,12 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Add CORS
-var DooCors = "DooProjectCors";
-
 // Add Dependency Injections
 builder.Services.AddScoped<IProductServices, ProductServices>();
+builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<ITransactionServices, TransactionServices>();
 
+// Add CORS
+var DooCors = "DooProjectCors";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: DooCors, policy => 

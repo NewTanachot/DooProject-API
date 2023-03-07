@@ -2,6 +2,7 @@
 using Azure.Core;
 using DooProject.Datas;
 using DooProject.DTO;
+using DooProject.Interfaces;
 using DooProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,20 +16,14 @@ namespace DooProject.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly DatabaseContext context;
+        private readonly IAuthServices authServices;
         private readonly UserManager<IdentityUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
-        private readonly ILoggerFactory logger;
-        private readonly IConfiguration configuration;
         private readonly ILogger authLogger;
 
-        public AuthController(DatabaseContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<AuthController> logger, IConfiguration configuration, ILoggerFactory Testlogger)
+        public AuthController(IAuthServices authServices ,UserManager<IdentityUser> userManager, ILogger<AuthController> logger)
         {
-            this.context = context;
+            this.authServices = authServices;
             this.userManager = userManager;
-            this.roleManager = roleManager;
-            this.logger = Testlogger;
-            this.configuration = configuration;
             authLogger = logger;
         }
 
@@ -54,14 +49,6 @@ namespace DooProject.Controllers
                         new Claim("FirstName", registerInfo.FirstName),
                         new Claim("LastName", registerInfo.LastName)
                     });
-
-                    // Create and Add Role "User" to User
-                    //if (!await roleManager.RoleExistsAsync("User"))
-                    //{
-                    //    await roleManager.CreateAsync(new IdentityRole("User"));
-                    //}
-
-                    //await userManager.AddToRoleAsync(user, "User");
 
                     return Ok(new { Success = $"User {registerInfo.Email} registered." });
                 }
@@ -91,8 +78,7 @@ namespace DooProject.Controllers
                 if (User != null && await userManager.CheckPasswordAsync(User, loginInfo.Password))
                 {
                     // Create JwtToken
-                    var AuthService = new AuthServices(userManager, roleManager, logger, configuration);
-                    var JwtToken = await AuthService.CreateAccessTokenAsync(User);
+                    var JwtToken = await authServices.CreateAccessTokenAsync(User);
 
                     // Check If token create fail
                     if (JwtToken == null)

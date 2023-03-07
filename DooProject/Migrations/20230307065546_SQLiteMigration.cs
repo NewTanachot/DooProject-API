@@ -162,7 +162,7 @@ namespace DooProject.Migrations
                 {
                     ProductId = table.Column<string>(type: "varchar(50)", nullable: false),
                     ProductName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    ProductDescripttion = table.Column<string>(type: "TEXT", nullable: true),
+                    ProductDescription = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
                     MFD = table.Column<DateTime>(type: "TEXT", nullable: true),
                     EXD = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -181,20 +181,20 @@ namespace DooProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductTransections",
+                name: "ProductTransactions",
                 columns: table => new
                 {
-                    TransectionID = table.Column<string>(type: "varchar(50)", nullable: false),
-                    TransectionType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    TransactionID = table.Column<string>(type: "varchar(50)", nullable: false),
+                    TransactionType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     ProductId = table.Column<string>(type: "varchar(50)", nullable: true),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    TransectionDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    TransactionDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductTransections", x => x.TransectionID);
+                    table.PrimaryKey("PK_ProductTransactions", x => x.TransactionID);
                     table.ForeignKey(
-                        name: "FK_ProductTransections_ProductLookUps_ProductId",
+                        name: "FK_ProductTransactions_ProductLookUps_ProductId",
                         column: x => x.ProductId,
                         principalTable: "ProductLookUps",
                         principalColumn: "ProductId");
@@ -243,8 +243,8 @@ namespace DooProject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductTransections_ProductId",
-                table: "ProductTransections",
+                name: "IX_ProductTransactions_ProductId",
+                table: "ProductTransactions",
                 column: "ProductId");
         }
 
@@ -267,7 +267,7 @@ namespace DooProject.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ProductTransections");
+                name: "ProductTransactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

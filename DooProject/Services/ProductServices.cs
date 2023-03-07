@@ -2,9 +2,7 @@
 using DooProject.DTO;
 using DooProject.Interfaces;
 using DooProject.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace DooProject.Services
 {
@@ -12,16 +10,22 @@ namespace DooProject.Services
     {
         private readonly DatabaseContext context;
         private readonly ILogger<ProductServices> productLogger;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly ITransactionServices transactionServices;
+        private readonly IAuthServices authServices;
 
-        public ProductServices(DatabaseContext context, ILogger<ProductServices> logger, UserManager<IdentityUser> userManager)
+        public ProductServices(
+            DatabaseContext context, 
+            ILogger<ProductServices> logger, 
+            ITransactionServices transactionServices, 
+            IAuthServices authServices)
         {
             this.context = context;
             this.productLogger = logger;
-            this.userManager = userManager;
+            this.transactionServices = transactionServices;
+            this.authServices = authServices;
         }
 
-        public async Task<object?> GetProductAsync(string? productId = null)
+        public async Task<object> GetProductAsync(string? productId = null)
         {
             try
             {
@@ -42,8 +46,8 @@ namespace DooProject.Services
             }
             catch (Exception ex)
             {
-                productLogger.LogError(ex.Message);
-                return null;
+                //productLogger.LogError(ex.Message);
+                return ex.Message;
             }
         }
 
@@ -60,7 +64,7 @@ namespace DooProject.Services
                             x.ProductName,
                             x.ProductDescription,
                             // Sum all TransectionAmount if it not null or return 0
-                            ProductQuantity = x.ProductTransections.Sum(s => s.Quantity),
+                            ProductQuantity = x.ProductTransactions.Sum(s => s.Quantity),
                             x.MFD,
                             x.EXD,
                             x.ProductAddDate
@@ -70,8 +74,8 @@ namespace DooProject.Services
             }
             catch (Exception ex)
             {
-                productLogger.LogError(ex.Message);
-                return null;
+                //productLogger.LogError(ex.Message);
+                return ex.Message;
             }
         }
 
@@ -80,7 +84,7 @@ namespace DooProject.Services
             try
             {
                 // Find UserClaim by userId  and  Check if not exists
-                var user = await FindUserAsync(userId);
+                var user = await authServices.FindUserAsync(userId);
                 if (user == null)
                 {
                     throw new Exception("UserId {userId} not found");
@@ -131,23 +135,21 @@ namespace DooProject.Services
                 // If Product was found in general (Bad case scenario)
                 else
                 {
-                    productLogger.LogWarning("Product name is duplicate.");
+                    var errorMessage = "Product name is duplicate.";
+                    productLogger.LogWarning(errorMessage);
                     //return BadRequest(new { Error = "Product name is duplicate." });
+
+                    return new Response
+                    {
+                        IsSuccess = false,
+                        Message = errorMessage
+                    };
                 }
 
                 // ======================== [ Transection Initialize ] ======================== //
 
-                // If Product have a Initialize number
-                if (productDTO.ProductQuantity != 0)
-                {
-                    // Add new ProductTransections
-                    await context.ProductTransections.AddAsync(new ProductTransection
-                    {
-                        ProductLookUp = NewProduct,
-                        Quantity = productDTO.ProductQuantity,
-                        TransectionType = "Initialize Number"
-                    });
-                }
+                // Add new ProductTransections
+                await transactionServices.AddTransactionAsync(NewProduct, productDTO.ProductQuantity, "Initialize quantity");
 
                 await context.SaveChangesAsync();
                 return new Response
@@ -215,44 +217,30 @@ namespace DooProject.Services
             }
         }
 
-        public async Task<ProductLookUp?> FindPoductByIdAsync(string productId)
+        public async Task<ProductLookUp?> FindPoductByIdAsync(string productId, bool includeUser = true)
         {
-            // Product can be both between obj and null
-            return await context.ProductLookUps
+
+            var result = new ProductLookUp();
+
+            if (includeUser)
+            {
+                result = await context.ProductLookUps
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.ProductId == productId);
-        }
-
-        // Check if Claim Id is exist 
-        public bool CheckIdClaimExist(List<Claim> userClaims, out string userId)
-        {
-            userId = userClaims.FirstOrDefault(x => x.Type == "Id")?.Value ?? string.Empty;
-            if (string.IsNullOrEmpty(userId))
+            }
+            else
             {
-                productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                return false;
+                result = await context.ProductLookUps.FirstOrDefaultAsync(x => x.ProductId == productId);
             }
 
-            return true;
+            // Product result can be both between obj and null
+            return result;
         }
 
         // Check ProductUserId and UserId from header is the same or not
         public bool CheckNoPermission(string userId, string productUserId)
         {
             return !userId.Equals(productUserId);
-        }
-
-        // PRIVATE... Find IdentityUser (User object) method
-        private async Task<IdentityUser?> FindUserAsync(string userId)
-        {
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                productLogger.LogWarning($"UserId {userId} not found");
-                return null;
-            }
-
-            return user;
         }
     }
 }

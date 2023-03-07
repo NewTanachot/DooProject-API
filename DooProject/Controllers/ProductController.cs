@@ -17,12 +17,14 @@ namespace DooProject.Controllers
     {
         private readonly DatabaseContext context;
         private readonly IProductServices productServices;
+        private readonly IAuthServices authServices;
         private readonly ILogger productLogger;
 
-        public ProductController(DatabaseContext context, IProductServices productServices, ILogger<ProductController> logger)
+        public ProductController(DatabaseContext context, IProductServices productServices, IAuthServices authServices, ILogger<ProductController> logger)
         {
             this.context = context;
             this.productServices = productServices;
+            this.authServices = authServices;
             productLogger = logger;
         }
 
@@ -32,7 +34,14 @@ namespace DooProject.Controllers
         {
             try
             {
-                return Ok(await productServices.GetProductAsync() ?? throw new Exception());
+                var result = await productServices.GetProductAsync();
+
+                if (result is string)
+                {
+                    throw new Exception(result.ToString());
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -45,7 +54,14 @@ namespace DooProject.Controllers
         {
             try
             {
-                return Ok(await productServices.GetProductAsync(productId) ?? throw new Exception());
+                var result = await productServices.GetProductAsync(productId);
+
+                if (result is string)
+                {
+                    throw new Exception(result.ToString());
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -60,14 +76,21 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in JWT  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
                 // Find and return all Product 
-                return Ok(await productServices.GetUserProductAsync(userId) ?? throw new Exception());
+                var result = await productServices.GetUserProductAsync(userId);
+
+                if (result is string)
+                {
+                    throw new Exception(result.ToString());
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -82,14 +105,21 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in Http header  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
                 // Find and return all Product 
-                return Ok(await productServices.GetUserProductAsync(userId, productId) ?? throw new Exception());
+                var result = await productServices.GetUserProductAsync(userId, productId);
+
+                if (result is string)
+                {
+                    throw new Exception(result.ToString());
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -104,7 +134,7 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in Http header  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
@@ -117,6 +147,12 @@ namespace DooProject.Controllers
                 if (result == null)
                 {
                     throw new Exception();
+                }
+
+                // Check if duplicate name
+                else if (!result.IsSuccess && result.Message.Contains("duplicate"))
+                {
+                    return BadRequest(result.Message);
                 }
 
                 return Ok(result);
@@ -134,7 +170,7 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in Http header  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
@@ -190,7 +226,7 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in Http header  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
@@ -233,7 +269,7 @@ namespace DooProject.Controllers
             try
             {
                 // Find userId in Http header  and  Check if it have Id Claim
-                if (!productServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
+                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
                 {
                     productLogger.LogWarning("Invalid Token Structure (No UserId).");
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });

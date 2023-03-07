@@ -25,7 +25,7 @@ namespace DooProject.Models
         // 1:n relationship (many)
         //[JsonIgnore]
         //[NotMapped]
-        public ICollection<ProductTransection> ProductTransections { get; set; } = new List<ProductTransection>();
+        public ICollection<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
 
         public DateTime? MFD { get; set; }
 

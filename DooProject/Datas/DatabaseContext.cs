@@ -11,6 +11,6 @@ namespace DooProject.Datas
 
         public DbSet<ProductLookUp> ProductLookUps { get; set; }
 
-        public DbSet<ProductTransection> ProductTransections { get; set; }
+        public DbSet<ProductTransaction> ProductTransactions { get; set; }
     }
 }
