@@ -10,7 +10,7 @@ namespace DooProject.Interfaces
         bool CheckNoPermission(string userId, string productUserId);
         Task<Response?> EditProductAsync(ProductDTO_Put productDTO, ProductLookUp Product, string userId);
         Task<ProductLookUp?> FindPoductByIdAsync(string productId, bool includeUser = true);
-        Task<object?> GetProductAsync(string? productId = null);
-        Task<object?> GetUserProductAsync(string userId, string? productId = null);
+        Task<object> GetProductAsync(string? productId = null);
+        Task<object> GetUserProductAsync(string userId, string? productId = null);
     }
 }

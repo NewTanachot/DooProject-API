@@ -46,12 +46,11 @@ namespace DooProject.Services
             }
             catch (Exception ex)
             {
-                //productLogger.LogError(ex.Message);
                 return ex.Message;
             }
         }
 
-        public async Task<object?> GetUserProductAsync(string userId, string? productId = null)
+        public async Task<object> GetUserProductAsync(string userId, string? productId = null)
         {
             try
             {
@@ -74,7 +73,6 @@ namespace DooProject.Services
             }
             catch (Exception ex)
             {
-                //productLogger.LogError(ex.Message);
                 return ex.Message;
             }
         }
