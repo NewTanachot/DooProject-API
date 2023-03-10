@@ -18,62 +18,48 @@ namespace DooProject.Services
 
         public async Task<object> GetTransactionAsync(string? productId = null)
         {
-            try
-            {
-                return await context.ProductTransactions
-                    .Include(x => x.ProductLookUp)
-                    .ThenInclude(x => x.User)
-                    .Where(x => !x.ProductLookUp.IsDeleted && (productId == null || x.ProductLookUp.ProductId == productId))
-                    .Select(x =>
-                        new
-                        {
-                            x.TransactionID,
-                            x.ProductLookUp.User.Id,
-                            x.ProductLookUp.User.UserName,
-                            x.ProductLookUp.ProductId,
-                            x.ProductLookUp.ProductName,
-                            x.Quantity,
-                            x.TransactionDate,
-                            x.TransactionType
-                        })
-                    .OrderByDescending(x => x.TransactionDate)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            return await context.ProductTransactions
+                .Include(x => x.ProductLookUp)
+                .ThenInclude(x => x.User)
+                .Where(x => !x.ProductLookUp.IsDeleted && (productId == null || x.ProductLookUp.ProductId == productId))
+                .Select(x =>
+                    new
+                    {
+                        x.TransactionID,
+                        x.ProductLookUp.User.Id,
+                        x.ProductLookUp.User.UserName,
+                        x.ProductLookUp.ProductId,
+                        x.ProductLookUp.ProductName,
+                        x.Quantity,
+                        x.TransactionDate,
+                        x.TransactionType
+                    })
+                .OrderByDescending(x => x.TransactionDate)
+                .ToListAsync();
         }
 
         public async Task<object> GetUserTransactionAsync(string userId, string? productId = null)
         {
-            try
-            {
-                return await context.ProductTransactions
-                    .Include(x => x.ProductLookUp)
-                    .ThenInclude(x => x.User)
-                    .Where(x => !x.ProductLookUp.IsDeleted &&
-                        x.ProductLookUp.User.Id == userId &&
-                        (productId == null || x.ProductLookUp.ProductId == productId))
-                    .Select(x =>
-                        new
-                        {
-                            x.TransactionID,
-                            x.ProductLookUp.User.Id,
-                            x.ProductLookUp.User.UserName,
-                            x.ProductLookUp.ProductId,
-                            x.ProductLookUp.ProductName,
-                            x.Quantity,
-                            x.TransactionDate,
-                            x.TransactionType
-                        })
-                    .OrderByDescending(x => x.TransactionDate)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            return await context.ProductTransactions
+                .Include(x => x.ProductLookUp)
+                .ThenInclude(x => x.User)
+                .Where(x => !x.ProductLookUp.IsDeleted &&
+                    x.ProductLookUp.User.Id == userId &&
+                    (productId == null || x.ProductLookUp.ProductId == productId))
+                .Select(x =>
+                    new
+                    {
+                        x.TransactionID,
+                        x.ProductLookUp.User.Id,
+                        x.ProductLookUp.User.UserName,
+                        x.ProductLookUp.ProductId,
+                        x.ProductLookUp.ProductName,
+                        x.Quantity,
+                        x.TransactionDate,
+                        x.TransactionType
+                    })
+                .OrderByDescending(x => x.TransactionDate)
+                .ToListAsync();
         }
 
         public async Task<bool> AddTransactionAsync(ProductLookUp product, int quantity, string type)
@@ -98,7 +84,7 @@ namespace DooProject.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                logger.LogError(ex, ex.Message);
                 return false;
             }
         }

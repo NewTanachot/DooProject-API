@@ -1,4 +1,5 @@
-﻿using DooProject.Datas;
+﻿using DooProject.CustomExceptions;
+using DooProject.Datas;
 using DooProject.DTO;
 using DooProject.Interfaces;
 using DooProject.Models;
@@ -33,14 +34,7 @@ namespace DooProject.Controllers
         {
             try
             {
-                var result = await productServices.GetProductAsync();
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await productServices.GetProductAsync());
             }
             catch (Exception ex)
             {
@@ -54,14 +48,7 @@ namespace DooProject.Controllers
         {
             try
             {
-                var result = await productServices.GetProductAsync(productId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await productServices.GetProductAsync(productId));
             }
             catch (Exception ex)
             {
@@ -84,18 +71,12 @@ namespace DooProject.Controllers
                 }
 
                 // Find and return all Product 
-                var result = await productServices.GetUserProductAsync(userId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await productServices.GetUserProductAsync(userId));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -113,18 +94,12 @@ namespace DooProject.Controllers
                 }
 
                 // Find and return all Product 
-                var result = await productServices.GetUserProductAsync(userId, productId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await productServices.GetUserProductAsync(userId, productId));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -144,23 +119,26 @@ namespace DooProject.Controllers
                 // Call AddProduct Method Product Services
                 var result = await productServices.AddProductAsync(productDTO, userId);
 
-                // Check some 500 error
-                if (result == null)
-                {
-                    throw new Exception();
-                }
-
-                // Check if duplicate name
-                else if (!result.IsSuccess && result.Message.Contains("duplicate"))
-                {
-                    return BadRequest(result.Message);
-                }
-
-                return Ok(result);
+                return Created("Add product done.", null);
             }
+
+            // Check User Notfound Exception from AddProductAsync method
+            catch (UserNotFoundException ex)
+            {
+                productLogger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
+            }
+            // Check duplicate product name  Exception from AddProductAsync method
+            catch (DuplicateException ex)
+            {
+                productLogger.LogWarning(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            // Check some server error
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                productLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -197,26 +175,20 @@ namespace DooProject.Controllers
                 // ------- Check Update Section -------
 
                 // Call EditProduct Method
-                var result = await productServices.EditProductAsync(productDTO, Product, userId);
-
-                // Check some 500 error
-                if (result == null)
-                {
-                    throw new Exception();
-                }
-
-                // Check if response is false cause of duplicate Name
-                else if (result.IsSuccess && result.Message.Contains("duplicate"))
-                {
-                    productLogger.LogWarning("Product name is duplicate.");
-                    return BadRequest("Product name is duplicate.");
-                }
-
-                return Ok(result);
+                await productServices.EditProductAsync(productDTO, Product, userId);
+                return Ok(new { Success = "Edit Product done." });
             }
+            // Check duplicate product name  Exception from AddProductAsync method
+            catch (DuplicateException ex)
+            {
+                productLogger.LogWarning(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            // Check some server error
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                productLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 

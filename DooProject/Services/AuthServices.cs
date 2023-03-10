@@ -16,12 +16,12 @@ namespace DooProject.Services
         private readonly IConfiguration configuration;
         private readonly ILogger authServiceLogger;
 
-        public AuthServices(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerFactory logger, IConfiguration configuration)
+        public AuthServices(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<AuthController> logger, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.configuration = configuration;
-            authServiceLogger = logger.CreateLogger<AuthController>();
+            authServiceLogger = logger;
         }
 
         public async Task<JwtSecurityToken?> CreateAccessTokenAsync(IdentityUser user)
@@ -92,14 +92,7 @@ namespace DooProject.Services
         // Find IdentityUser (User object) method
         public async Task<IdentityUser?> FindUserAsync(string userId)
         {
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                authServiceLogger.LogWarning($"UserId {userId} not found");
-                return null;
-            }
-
-            return user;
+            return await userManager.FindByIdAsync(userId); 
         }
     }
 }

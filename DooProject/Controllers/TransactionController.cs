@@ -38,19 +38,13 @@ namespace DooProject.Controllers
         {
             try
             {
-                var result = await transactionServices.GetTransactionAsync();
-                
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await transactionServices.GetTransactionAsync());
             }
             catch (Exception ex) 
             {
-                transactionLogger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                transactionLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, 
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -59,19 +53,13 @@ namespace DooProject.Controllers
         {
             try
             {
-                var result = await transactionServices.GetTransactionAsync(productId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await transactionServices.GetTransactionAsync(productId));
             }
             catch (Exception ex)
             {
-                transactionLogger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                transactionLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -88,19 +76,13 @@ namespace DooProject.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
-                var result = await transactionServices.GetUserTransactionAsync(userId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await transactionServices.GetUserTransactionAsync(userId));
             }
             catch (Exception ex)
             {
-                transactionLogger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                transactionLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -117,19 +99,13 @@ namespace DooProject.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
                 }
 
-                var result = await transactionServices.GetUserTransactionAsync(userId, productId);
-
-                if (result is string)
-                {
-                    throw new Exception(result.ToString());
-                }
-
-                return Ok(result);
+                return Ok(await transactionServices.GetUserTransactionAsync(userId, productId));
             }
             catch (Exception ex)
             {
-                transactionLogger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                transactionLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
@@ -162,8 +138,9 @@ namespace DooProject.Controllers
             }
             catch(Exception ex)
             {
-                transactionLogger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                transactionLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
     }
