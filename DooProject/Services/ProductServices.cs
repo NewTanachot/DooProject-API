@@ -27,54 +27,40 @@ namespace DooProject.Services
 
         public async Task<object> GetProductAsync(string? productId = null)
         {
-            try
-            {
-                return await context.ProductLookUps
-                    .Where(x => !x.IsDeleted && (productId == null || x.ProductId == productId))
-                    .Select(x => new
-                    {
-                        x.ProductId,
-                        x.ProductName,
-                        x.ProductDescription,
-                        x.MFD,
-                        x.EXD,
-                        UserId = x.User.Id,
-                        x.User.UserName,
-                        x.ProductAddDate
-                    })
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            return await context.ProductLookUps
+                .Where(x => !x.IsDeleted && (productId == null || x.ProductId == productId))
+                .Select(x => new
+                {
+                    x.ProductId,
+                    x.ProductName,
+                    x.ProductDescription,
+                    x.MFD,
+                    x.EXD,
+                    UserId = x.User.Id,
+                    x.User.UserName,
+                    x.ProductAddDate
+                })
+                .ToListAsync();
         }
 
         public async Task<object> GetUserProductAsync(string userId, string? productId = null)
         {
-            try
-            {
-                return await context.ProductLookUps
-                    .Where(x => !x.IsDeleted && x.User.Id == userId && (productId == null || x.ProductId == productId))
-                    .Select(x =>
-                        new
-                        {
-                            x.ProductId,
-                            x.ProductName,
-                            x.ProductDescription,
-                            // Sum all TransectionAmount if it not null or return 0
-                            ProductQuantity = x.ProductTransactions.Sum(s => s.Quantity),
-                            x.MFD,
-                            x.EXD,
-                            x.ProductAddDate
-                        })
-                    .OrderBy(x => x.ProductName)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            return await context.ProductLookUps
+                .Where(x => !x.IsDeleted && x.User.Id == userId && (productId == null || x.ProductId == productId))
+                .Select(x =>
+                    new
+                    {
+                        x.ProductId,
+                        x.ProductName,
+                        x.ProductDescription,
+                        // Sum all TransectionAmount if it not null or return 0
+                        ProductQuantity = x.ProductTransactions.Sum(s => s.Quantity),
+                        x.MFD,
+                        x.EXD,
+                        x.ProductAddDate
+                    })
+                .OrderBy(x => x.ProductName)
+                .ToListAsync();
         }
 
         public async Task<Response?> AddProductAsync(ProductDTO_Post productDTO, string userId)

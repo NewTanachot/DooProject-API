@@ -29,7 +29,6 @@ namespace DooProject.Controllers
         }
 
         [HttpGet("[action]")]
-        //[Authorize(Roles = "User")]
         public async Task<IActionResult> GetProductForAllUserAsync()
         {
             try
@@ -45,7 +44,8 @@ namespace DooProject.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, 
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}" );
             }
         }
 
@@ -65,7 +65,8 @@ namespace DooProject.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} {Environment.NewLine} {ex.StackTrace}");
             }
         }
 
