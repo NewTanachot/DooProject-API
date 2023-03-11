@@ -103,15 +103,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 // Use Serilog
-//builder.Host.UseSerilog((context, config) =>
-//{
-//    // Config from appsetting 
-//    config.ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
+builder.Host.UseSerilog((context, config) =>
+{
+    // Config from appsetting 
+    //config.ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
 
-//    // Dirty Manual config
-//    //config.WriteTo.Console();
-//    //config.WriteTo.File(builder.Configuration.GetValue<string>("") ?? string.Empty);
-//});
+    // --- Dirty Manual config ---
+    
+    // = set minimum logger = 
+    //config.MinimumLevel.Debug();
+
+    // = log to console =
+    config.WriteTo.Console();
+
+    // = log to file in local directory path =
+    config.WriteTo.File(Environment.CurrentDirectory + "\\LoggerFile.txt");
+});
 
 //builder.Services.AddSwaggerGen();
 
@@ -154,7 +161,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Set App to use DooCors Setup option
-// and apply it to every request
+// and apply it to every request by middleware
 app.UseCors(DooCors);
 
 // Use Serilog

@@ -26,7 +26,7 @@ namespace DooProject.Services
                     new
                     {
                         x.TransactionID,
-                        x.ProductLookUp.User.Id,
+                        UserId = x.ProductLookUp.User.Id,
                         x.ProductLookUp.User.UserName,
                         x.ProductLookUp.ProductId,
                         x.ProductLookUp.ProductName,
@@ -50,7 +50,7 @@ namespace DooProject.Services
                     new
                     {
                         x.TransactionID,
-                        x.ProductLookUp.User.Id,
+                        UserId = x.ProductLookUp.User.Id,
                         x.ProductLookUp.User.UserName,
                         x.ProductLookUp.ProductId,
                         x.ProductLookUp.ProductName,

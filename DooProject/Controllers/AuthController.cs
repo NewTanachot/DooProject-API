@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace DooProject.Controllers
@@ -63,8 +64,9 @@ namespace DooProject.Controllers
             }
             catch (Exception ex) 
             {
-                authLogger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                authLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} \n {ex.StackTrace}");
             }
         }
 
@@ -101,8 +103,9 @@ namespace DooProject.Controllers
             }
             catch(Exception ex) 
             {
-                authLogger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                authLogger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"{ex.Message} \n {ex.StackTrace}");
             }
         }
     }
