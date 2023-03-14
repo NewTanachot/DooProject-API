@@ -22,6 +22,9 @@ builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<ITransactionServices, TransactionServices>();
 
+// Add In MemoryCache
+builder.Services.AddMemoryCache();
+
 // Add CORS
 var DooCors = "DooProjectCors";
 builder.Services.AddCors(options =>

@@ -4,6 +4,7 @@ using DooProject.DTO;
 using DooProject.Interfaces;
 using DooProject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DooProject.Services
 {
@@ -13,35 +14,85 @@ namespace DooProject.Services
         private readonly ILogger<ProductServices> productLogger;
         private readonly ITransactionServices transactionServices;
         private readonly IAuthServices authServices;
+        private readonly IMemoryCache memoryCache;
 
         public ProductServices(
             DatabaseContext context, 
             ILogger<ProductServices> logger, 
             ITransactionServices transactionServices, 
-            IAuthServices authServices)
+            IAuthServices authServices,
+            IMemoryCache memoryCache)
         {
             this.context = context;
             this.productLogger = logger;
             this.transactionServices = transactionServices;
             this.authServices = authServices;
+            this.memoryCache = memoryCache;
         }
 
         public async Task<object> GetProductAsync(string? productId = null)
         {
-            return await context.ProductLookUps
-                .Where(x => !x.IsDeleted && (productId == null || x.ProductId == productId))
-                .Select(x => new
+            // declare product object
+            object? product;
+
+            // Check if need specific productId
+            if (productId != null)
+            {
+                product = await context.ProductLookUps
+                    .Where(x => !x.IsDeleted && x.ProductId == productId)
+                    .Take(100)
+                    .OrderBy(x => x.ProductAddDate)
+                    .Select(x => new
+                    {
+                        x.ProductId,
+                        x.ProductName,
+                        x.ProductDescription,
+                        x.MFD,
+                        x.EXD,
+                        UserId = x.User.Id,
+                        x.User.UserName,
+                        x.ProductAddDate
+                    })
+                    .ToListAsync();
+            }
+            // Need all product *Take only 100
+            else
+            {
+                // Get product in MemoryCache by key
+                product = memoryCache.Get("ProductItem");
+
+                // Check if cache miss
+                if (product == null)
                 {
-                    x.ProductId,
-                    x.ProductName,
-                    x.ProductDescription,
-                    x.MFD,
-                    x.EXD,
-                    UserId = x.User.Id,
-                    x.User.UserName,
-                    x.ProductAddDate
-                })
-                .ToListAsync();
+                    // Get new product object from db
+                    product = await context.ProductLookUps
+                        .Where(x => !x.IsDeleted)
+                        .Take(100)
+                        .OrderBy(x => x.ProductAddDate)
+                        .Select(x => new
+                        {
+                            x.ProductId,
+                            x.ProductName,
+                            x.ProductDescription,
+                            x.MFD,
+                            x.EXD,
+                            UserId = x.User.Id,
+                            x.User.UserName,
+                            x.ProductAddDate
+                        })
+                        .ToListAsync();
+
+                    // Set cache by MemoryCacheEntryOptions
+                    memoryCache.Set("ProductItem", product, new MemoryCacheEntryOptions
+                    {
+                        Priority = CacheItemPriority.Normal,
+                        SlidingExpiration = TimeSpan.FromMinutes(1),
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    });
+                }
+            }
+
+            return product;
         }
 
         public async Task<object> GetUserProductAsync(string userId, string? productId = null)
