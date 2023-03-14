@@ -63,12 +63,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in JWT  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find and return all Product 
                 return Ok(await productServices.GetUserProductAsync(userId));
@@ -86,12 +82,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find and return all Product 
                 return Ok(await productServices.GetUserProductAsync(userId, productId));
@@ -109,12 +101,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Call AddProduct Method Product Services
                 var result = await productServices.AddProductAsync(productDTO, userId);
@@ -148,12 +136,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find Product include User by ProductId
                 var Product = await productServices.FindPoductByIdAsync(productDTO.ProductId);
@@ -198,12 +182,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find Product by ProductId for Delete
                 var SoftDeleteProduct = await productServices.FindPoductByIdAsync(productId);
@@ -241,12 +221,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    productLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find Delete Product by productId
                 var DeletedProduct = await productServices.FindPoductByIdAsync(productId);

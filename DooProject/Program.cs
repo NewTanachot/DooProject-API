@@ -1,5 +1,6 @@
 using DooProject.Datas;
 using DooProject.Interfaces;
+using DooProject.Middelwares;
 using DooProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +43,10 @@ builder.Services.AddCors(options =>
 
 // Database Context Dependencby Injection 
 builder.Services.AddDbContext<DatabaseContext>(options => {
-    options.UseSqlite(builder.Configuration.GetConnectionString("Default"));
+    //options.UseSqlite(builder.Configuration.GetConnectionString("Default"));
+
+    // set dirty ConnectionString for runing in self-contain Tester Team
+    options.UseSqlite($"Data Source={Environment.CurrentDirectory}\\SQLite\\DooProject.db");
 });
 
 // Add Identity
@@ -117,7 +121,7 @@ builder.Host.UseSerilog((context, config) =>
     config.WriteTo.Console();
 
     // = log to file in local directory path =
-    config.WriteTo.File(Environment.CurrentDirectory + "\\LoggerFile.txt");
+    config.WriteTo.File(Environment.CurrentDirectory + "\\log\\LoggerFile.txt");
 });
 
 //builder.Services.AddSwaggerGen();
@@ -173,5 +177,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// use Custom middleware
+
+//app.UseCustomMiddleware();
+//app.UseMiddleware<CustomMiddleware>();
+
+// ?? NOTE : when use MapWhen() it cause 2 of app.Auth and app.UseHttpsRedirection not do the work. Need to use UseWhen instead. ??
+// see what is between in https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-7.0
+
+// Custom Middleware to specific path or endpoint
+//app.UseWhen(context => context.Request.Path.Value?.Contains("Auth") ?? false,
+//    app => app.UseCustomMiddleware());
+
+// Customer Middleware for check UserId
+app.UseWhen(context => !((context.Request.Path.Value?.Contains("Auth") ?? false) || (context.Request.Path.Value?.Contains("ForAllUser") ?? false)), 
+    app => app.UseFindUserIdMiddleware());
 
 app.Run();

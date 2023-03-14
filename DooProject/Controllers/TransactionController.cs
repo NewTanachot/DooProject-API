@@ -70,12 +70,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    transactionLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 return Ok(await transactionServices.GetUserTransactionAsync(userId));
             }
@@ -93,12 +89,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    transactionLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 return Ok(await transactionServices.GetUserTransactionAsync(userId, productId));
             }
@@ -116,12 +108,8 @@ namespace DooProject.Controllers
         {
             try
             {
-                // Find userId in Http header  and  Check if it have Id Claim
-                if (!authServices.CheckIdClaimExist(User.Claims.ToList(), out string userId))
-                {
-                    transactionLogger.LogWarning("Invalid Token Structure (No UserId).");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { Error = "Invalid Token Structure (No UserId)." });
-                }
+                // Get UserId in middleware and check if not null
+                var userId = HttpContext.Items["UserId"]?.ToString() ?? throw new ArgumentNullException();
 
                 // Find Product by PK and Check if not exist
                 var LookupProduct = await productServices.FindPoductByIdAsync(transaction.ProductID, false);
