@@ -36,7 +36,7 @@ namespace DooProject.Services
                 var TokenClaims = new List<Claim>
                 {
                     // Add UserId to JWT
-                    new Claim("I", user.Id)
+                    new Claim("Id", user.Id)
                 };
 
                 // Add all UserClaims to TokenClaims

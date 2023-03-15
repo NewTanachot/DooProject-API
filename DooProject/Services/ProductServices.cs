@@ -99,6 +99,8 @@ namespace DooProject.Services
         {
             return await context.ProductLookUps
                 .Where(x => !x.IsDeleted && x.User.Id == userId && (productId == null || x.ProductId == productId))
+                .Take(100)
+                .OrderBy(x => x.ProductAddDate)
                 .Select(x =>
                     new
                     {
