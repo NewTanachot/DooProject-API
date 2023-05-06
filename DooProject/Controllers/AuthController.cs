@@ -3,6 +3,7 @@ using Azure.Core;
 using DooProject.Datas;
 using DooProject.DTO;
 using DooProject.Interfaces;
+using DooProject.Models;
 using DooProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,17 @@ namespace DooProject.Controllers
             this.authServices = authServices;
             this.userManager = userManager;
             authLogger = logger;
+        }
+
+        [HttpGet]
+        public IActionResult TestForAllUser()
+        {
+            return Ok(new ProductLookUp
+            {
+                ProductId = "123",
+                ProductName = "Test",
+                ProductDescription = "Test"
+            });
         }
 
         [HttpPost("[action]")]

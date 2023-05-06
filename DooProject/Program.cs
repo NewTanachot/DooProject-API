@@ -46,10 +46,10 @@ builder.Services.AddCors(options =>
 
 // Database Context Dependencby Injection 
 builder.Services.AddDbContext<DatabaseContext>(options => {
-    //options.UseSqlite(builder.Configuration.GetConnectionString("Default"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default"));
 
     // set dirty ConnectionString for runing in self-contain Tester Team
-    options.UseSqlite($"Data Source={Environment.CurrentDirectory}\\SQLite\\DooProject.db");
+    //options.UseSqlite($"Data Source={Environment.CurrentDirectory}\\SQLite\\DooProject.db");
 });
 
 // Add Identity
