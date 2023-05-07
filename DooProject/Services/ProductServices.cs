@@ -41,7 +41,7 @@ namespace DooProject.Services
                 product = await context.ProductLookUps
                     .Where(x => !x.IsDeleted && x.ProductId == productId)
                     .Take(100)
-                    .OrderBy(x => x.ProductAddDate)
+                    .OrderBy(x => x.ProductAddDate).ThenBy(x => x.ProductName)
                     .Select(x => new
                     {
                         x.ProductId,
@@ -68,7 +68,7 @@ namespace DooProject.Services
                     product = await context.ProductLookUps
                         .Where(x => !x.IsDeleted)
                         .Take(100)
-                        .OrderBy(x => x.ProductAddDate)
+                        .OrderBy(x => x.ProductAddDate).ThenBy(x => x.ProductName)
                         .Select(x => new
                         {
                             x.ProductId,
@@ -100,7 +100,7 @@ namespace DooProject.Services
             return await context.ProductLookUps
                 .Where(x => !x.IsDeleted && x.User.Id == userId && (productId == null || x.ProductId == productId))
                 .Take(100)
-                .OrderBy(x => x.ProductAddDate)
+                .OrderBy(x => x.ProductAddDate).ThenBy(x => x.ProductName)
                 .Select(x =>
                     new
                     {
@@ -113,7 +113,6 @@ namespace DooProject.Services
                         x.EXD,
                         x.ProductAddDate
                     })
-                .OrderBy(x => x.ProductName)
                 .ToListAsync();
         }
 
